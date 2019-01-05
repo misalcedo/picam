@@ -1,14 +1,12 @@
-from httpstream import StreamingServer, BaseStreamingHandler
+from server.stream import StreamingServer, BaseStreamingHandler
 
 
 class StreamingHandler(BaseStreamingHandler):
     """The handler for the streaming webcam server."""
-
-    @staticmethod
-    def read_frame():
-        with video_output.condition:
-            video_output.condition.wait()
-            return video_output.frame
+    def read_frame(self):
+        with self.server.frames.condition:
+            self.server.frames.condition.wait()
+            return self.server.frames.frame
 
     def send_frame(self):
         self.wfile.write(self.read_frame())

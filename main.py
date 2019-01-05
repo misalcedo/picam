@@ -1,5 +1,7 @@
 import argparse
 from camera.frames import FrameSplitter
+from server.handler import StreamingHandler
+from server.stream import StreamingServer
 
 
 def main():
@@ -12,20 +14,21 @@ def main():
                         choices=["pi", "stub", "usb"],
                         default="pi")
     parser.add_argument("--port", help="The TCP port to listen on.",
+                        type=int,
                         default=8080)
     parser.add_argument("--host", help="The host interface to listen on.",
                         default="0.0.0.0")
 
     namespace = parser.parse_args()
 
-    print("Hello, World!", namespace)
+    print("Started webcam server with arguments:", namespace)
 
     webcam = create_camera(namespace.camera)
     video_output = FrameSplitter()
     webcam.record(video_output)
 
     try:
-        server = StreamingServer(('', 80), StreamingHandler)
+        server = StreamingServer(video_output, ('', namespace.port), StreamingHandler)
         server.serve_forever()
     finally:
         webcam.stop()

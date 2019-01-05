@@ -65,3 +65,7 @@ class BaseStreamingHandler(BaseHTTPRequestHandler):
 class StreamingServer(ThreadingMixIn, HTTPServer):
     allow_reuse_address = True
     daemon_threads = True
+
+    def __init__(self, frames, server_address, handler_class):
+        self.frames = frames
+        super().__init__(server_address, handler_class)
