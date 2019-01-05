@@ -1,0 +1,23 @@
+#!/bin/bash
+
+
+cat << EOF > /usr/local/bin/letsencrypt-renew-certs
+#!/bin/bash
+
+# See https://letsencrypt.org/getting-started/
+# This script assumes that the certificate has already been generated on this host.
+
+cd /tmp
+rm certbot-auto
+wget https://dl.eff.org/certbot-auto
+chmod a+x certbot-auto
+
+python3 -c 'import random; import time; time.sleep(random.random() * 3600)'
+
+./certbot-auto renew
+EOF
+
+chmod +x /usr/local/bin/letsencrypt-renew-certs
+
+echo "Run 'EDITOR=nano crontab -e' and write the following:"
+echo "0 0,12 * * * /usr/local/bin/letsencrypt-renew-certs"

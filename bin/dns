@@ -21,7 +21,7 @@ IP=\$( dig +short myip.opendns.com @resolver1.opendns.com )
 # Update Google DNS Record
 URL="https://\${USERNAME}:\${PASSWORD}@domains.google.com/nic/update?hostname=\${HOSTNAME}&myip=\${IP}"
 
-curl -s $URL
+curl -s \${URL}
 EOF
 
 chmod +x /usr/local/bin/${SUB_DOMAIN}-dynamic-dns

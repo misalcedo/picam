@@ -1,4 +1,5 @@
 import argparse
+import ssl
 from camera.frames import FrameSplitter
 from server.handler import StreamingHandler
 from server.stream import StreamingServer
@@ -18,6 +19,12 @@ def main():
                         default=1629)
     parser.add_argument("--host", help="The host interface to listen on.",
                         default="0.0.0.0")
+    parser.add_argument("--domain", help="The host interface to listen on.",
+                        default="puppy-cam.salcedo.cc")
+    parser.add_argument("--cert", help="The file path to the TLS certificate.",
+                        default="chain.pem")
+    parser.add_argument("--key", help="The file path to the TLS certificate key.",
+                        default="privkey.pem")
 
     namespace = parser.parse_args()
 
@@ -28,7 +35,11 @@ def main():
     webcam.record(video_output)
 
     try:
-        server = StreamingServer(video_output, ('', namespace.port), StreamingHandler)
+        context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        context.load_cert_chain(namespace.cert, namespace.key)
+
+        server = StreamingServer(video_output, (namespace.host, namespace.port), StreamingHandler)
+        server.socket = context.wrap_socket(server.socket, server_side=True)
         server.serve_forever()
     finally:
         webcam.stop()
