@@ -1,3 +1,4 @@
+from camera.camera import Camera
 from picamera import PiCamera as PiCam
 
 

@@ -1,4 +1,5 @@
 import argparse
+from camera.frames import FrameSplitter
 
 
 def main():
@@ -33,13 +34,13 @@ def main():
 def create_camera(name):
     """Chooses the Camera implementation based on the given camera name."""
     if name == "pi":
-        from camera.pi import PiCamera
-        return PiCamera()
+        from camera.pi import PiCamera as Camera
     elif name == "stub":
-        from camera.stub import StubCamera
-        return StubCamera()
+        from camera.stub import StubCamera as Camera
     else:
         return None
+
+    return Camera()
 
 
 if __name__ == '__main__':
