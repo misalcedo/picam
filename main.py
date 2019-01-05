@@ -25,6 +25,10 @@ def main():
                         default="fullchain.pem")
     parser.add_argument("--key", help="The file path to the TLS certificate key.",
                         default="privkey.pem")
+    parser.add_argument("--secrets", help="The file path to the Google API's client-secrets JSON file.",
+                        default="client_secret.json")
+    parser.add_argument("--redirect", help="The URL path for the OATH server to redirect an authentication response to.",
+                        default="/oauth2/callback")
 
     namespace = parser.parse_args()
 
