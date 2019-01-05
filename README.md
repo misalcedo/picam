@@ -7,6 +7,7 @@ A raspberry pi-powered home camera
 * A Rapsberry Pi
 * A Raspberry Pi camera
 * An internet connection
+* A `client_secret.json` file from [Google Developer APIs](https://console.developers.google.com/apis/credentials) for OATH 2.0 authentication.
 
 # Installation
 1. Clone the git repo into the desired host.
