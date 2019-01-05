@@ -15,7 +15,7 @@ def main():
                         default="pi")
     parser.add_argument("--port", help="The TCP port to listen on.",
                         type=int,
-                        default=8080)
+                        default=1629)
     parser.add_argument("--host", help="The host interface to listen on.",
                         default="0.0.0.0")
 
