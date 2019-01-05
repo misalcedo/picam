@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Copies the certs to the current directory
+cp /etc/letsencrypt/live/$HOSTNAME/privkey.pem ./
+cp /etc/letsencrypt/live/$HOSTNAME/fullchain.pem ./
+
+chown pirate:pirate *.pem

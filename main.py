@@ -22,7 +22,7 @@ def main():
     parser.add_argument("--domain", help="The host interface to listen on.",
                         default="puppy-cam.salcedo.cc")
     parser.add_argument("--cert", help="The file path to the TLS certificate.",
-                        default="chain.pem")
+                        default="fullchain.pem")
     parser.add_argument("--key", help="The file path to the TLS certificate key.",
                         default="privkey.pem")
 
