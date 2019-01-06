@@ -7,8 +7,11 @@ class StubCamera(Camera):
     def __init__(self):
         pass
 
-    def record(self, buffer):
-        pass # TODO write frames to buffer
+    def record(self):
+        pass
 
     def stop(self):
+        pass
+
+    def frames(self):
         pass

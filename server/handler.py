@@ -1,8 +1,8 @@
-from server.stream import StreamingServer, BaseStreamingHandler
+from server.stream import BaseStreamingHandler
 
 
 class StreamingHandler(BaseStreamingHandler):
-    """The handler for the streaming webcam server."""
+    """The handler for the streaming web-cam server."""
     def read_frame(self):
         with self.server.frames.condition:
             self.server.frames.condition.wait()

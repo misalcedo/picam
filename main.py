@@ -1,6 +1,5 @@
 import argparse
 import ssl
-from camera.frames import FrameSplitter
 from server.handler import StreamingHandler
 from server.stream import StreamingServer
 
@@ -35,14 +34,13 @@ def main():
     print("Started web-cam server with arguments:", namespace)
 
     web_cam = create_camera(namespace.camera)
-    video_output = FrameSplitter()
-    web_cam.record(video_output)
+    web_cam.record()
 
     try:
         context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
         context.load_cert_chain(namespace.cert, namespace.key)
 
-        server = StreamingServer(video_output, (namespace.host, namespace.port), StreamingHandler)
+        server = StreamingServer(web_cam.frames(), (namespace.host, namespace.port), StreamingHandler)
         server.socket = context.wrap_socket(server.socket, server_side=True)
         server.serve_forever()
     finally:

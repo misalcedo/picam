@@ -2,7 +2,7 @@ from io import BytesIO
 from threading import Condition
 
 
-class Frame:
+class FrameSplitter:
     def __init__(self):
         self.frame = None
         self.output = BytesIO()

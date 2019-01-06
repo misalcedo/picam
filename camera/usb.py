@@ -7,8 +7,11 @@ class UsbCamera(Camera):
     def __init__(self):
         pass
 
-    def record(self, buffer):
+    def record(self):
         pass # TODO write frames to buffer
 
     def stop(self):
+        pass
+
+    def frames(self):
         pass
