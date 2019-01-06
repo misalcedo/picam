@@ -55,6 +55,8 @@ def create_camera(name):
         from camera.pi import PiCamera as Camera
     elif name == "stub":
         from camera.stub import StubCamera as Camera
+    elif name == "usb":
+        from camera.usb import UsbCamera as Camera
     else:
         return None
 

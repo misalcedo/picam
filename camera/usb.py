@@ -1,8 +1,8 @@
 from camera.camera import Camera
 
 
-class StubCamera(Camera):
-    """A camera implementation that writes black frames."""
+class UsbCamera(Camera):
+    """A camera implementation that uses a USB-based camera."""
 
     def __init__(self):
         pass
