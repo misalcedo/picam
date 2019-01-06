@@ -1,0 +1,29 @@
+version: '3'
+services:
+  pi:
+    image: puppy-cam:pi
+    build:
+      context: .
+      dockerfile: Dockerfile-arm
+      args:
+        domain: puppy-cam.salcedo.cc
+        camera: pi
+    ports:
+      - 1629:443
+    devices:
+      - /dev/vchiq
+    volumes:
+      - /etc/letsencrypt/live/puppy-cam.salcedo.cc/fullchain.pem:/usr/src/app/fullchain.pem
+      - /etc/letsencrypt/live/puppy-cam.salcedo.cc/privkey.pem:/usr/src/app/privkey.pem
+  usb:
+    image: puppy-cam:usb
+    build:
+      context: .
+      dockerfile: Dockerfile-x86
+      args:
+        domain: Fayt
+        camera: usb
+    ports:
+      - 1629:443
+    devices:
+      - /dev/video0

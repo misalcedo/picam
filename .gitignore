@@ -2,3 +2,5 @@ __pycache__
 client_secret.json
 picam-venv
 *.pem
+*.key
+.idea

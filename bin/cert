@@ -1,8 +1,7 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
 
 cat << EOF > /usr/local/bin/letsencrypt-renew-certs
-#!/bin/bash
+#!/usr/bin/env bash
 
 # See https://letsencrypt.org/getting-started/
 # This script assumes that the certificate has already been generated on this host.

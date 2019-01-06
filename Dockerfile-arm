@@ -1,0 +1,13 @@
+FROM resin/raspberrypi-alpine-python:3-onbuild
+
+EXPOSE 443
+
+ARG domain
+ARG camera
+
+COPY requirements-pi.txt ./
+RUN pip install --no-cache-dir -r requirements-pi.txt
+
+ENV CAMERA=$camera DOMAIN=$domain
+
+CMD python3 main.py --port 443 --camera $CAMERA --domain $DOMAIN

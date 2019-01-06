@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 cat << EOF > /usr/local/bin/${SUB_DOMAIN}-dynamic-dns
-#!/bin/bash
+#!/usr/bin/env bash
 
 ### Google Domains provides an API to update a DNS
 ### "Synthetic record". This script updates a record with 

@@ -8,7 +8,7 @@ from server.stream import StreamingServer
 def main():
     """
     Sample usage:
-        python3 main.py --camera picam
+        python3 main.py --camera pi --port 1629 --domain localhost --host localhost
     """
     parser = argparse.ArgumentParser(description="A home security camera server.")
     parser.add_argument("--camera", help="The type of camera to use.",
@@ -32,11 +32,11 @@ def main():
 
     namespace = parser.parse_args()
 
-    print("Started webcam server with arguments:", namespace)
+    print("Started web-cam server with arguments:", namespace)
 
-    webcam = create_camera(namespace.camera)
+    web_cam = create_camera(namespace.camera)
     video_output = FrameSplitter()
-    webcam.record(video_output)
+    web_cam.record(video_output)
 
     try:
         context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
@@ -46,7 +46,7 @@ def main():
         server.socket = context.wrap_socket(server.socket, server_side=True)
         server.serve_forever()
     finally:
-        webcam.stop()
+        web_cam.stop()
 
 
 def create_camera(name):
