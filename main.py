@@ -1,5 +1,6 @@
 import argparse
 import ssl
+import json
 from server.handler import StreamingHandler
 from server.stream import StreamingServer
 
@@ -26,12 +27,13 @@ def main():
                         default="privkey.pem")
     parser.add_argument("--secrets", help="The file path to the Google API's client-secrets JSON file.",
                         default="client_secret.json")
-    parser.add_argument("--redirect", help="The URL path for the OATH server to redirect an authentication response to.",
-                        default="/oauth2/callback")
+    parser.add_argument("--users", help="The list of email addresses allowed to access the web-cam.",
+                        nargs='+',
+                        default=[])
 
     namespace = parser.parse_args()
 
-    print("Started web-cam server with arguments:", namespace)
+    client_id = load_client_id(namespace)
 
     web_cam = create_camera(namespace.camera)
     web_cam.record()
@@ -40,11 +42,22 @@ def main():
         context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
         context.load_cert_chain(namespace.cert, namespace.key)
 
-        server = StreamingServer(web_cam.frames(), (namespace.host, namespace.port), StreamingHandler)
+        server = StreamingServer(server_address=(namespace.host, namespace.port), handler_class=StreamingHandler,
+                                 frames=web_cam.frames(), client_id=client_id,
+                                 users=namespace.users)
         server.socket = context.wrap_socket(server.socket, server_side=True)
+
+        print("Started web-cam server with arguments:", namespace)
+
         server.serve_forever()
     finally:
         web_cam.stop()
+
+
+def load_client_id(namespace):
+    """Loads the client id from the client secret JSON file."""
+    with open(namespace.secrets) as secret:
+        return json.load(secret)["web"]["client_id"]
 
 
 def create_camera(name):

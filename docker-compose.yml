@@ -27,5 +27,3 @@ services:
       - 1629:443
     devices:
       - /dev/video0
-    volumes:
-      - /opt/opencv:/opt
