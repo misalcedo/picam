@@ -17,6 +17,7 @@ A raspberry pi-powered home camera
 1. Follow the instructions on [Let's Encrypt](https://letsencrypt.org/getting-started/) to create a TLS certificate.
 1. Run `bin/cert` from a shell to schedule a CRON that renews the TLS certificates.
 1. Run `bin/copy-cert` to copy the certificates for your domain into the repo root.
+    1. Run `bin/generate-cert` to create a self-signed TLS certificate in the repo root.
 1. Run `bin/run` to execute the camera.
 
 
