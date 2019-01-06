@@ -30,5 +30,8 @@ class UsbCamera(Camera):
         while self.video_stream.isOpened():
             success, frame = self.video_stream.read()
             if success:
-                self.frame.update(cv2.imencode('.jpg', frame)[1].tobytes())
+                encoded, image = cv2.imencode('.jpg', frame)
+                if encoded:
+                    self.frame.update(image.tobytes())
+
                 time.sleep(self.seconds_per_frame)
