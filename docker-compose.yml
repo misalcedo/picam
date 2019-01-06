@@ -2,6 +2,7 @@ version: '3'
 services:
   pi:
     image: puppy-cam:pi
+    env_file: users.env
     build:
       context: .
       dockerfile: Dockerfile-arm
@@ -17,6 +18,7 @@ services:
       - /etc/letsencrypt/live/puppy-cam.salcedo.cc/privkey.pem:/usr/src/app/privkey.pem
   usb:
     image: puppy-cam:usb
+    env_file: users.env
     build:
       context: .
       dockerfile: Dockerfile-x86

@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir -r requirements-pi.txt
 
 ENV CAMERA=$camera DOMAIN=$domain
 
-CMD python3 main.py --port 443 --camera $CAMERA --domain $DOMAIN
+CMD python3 main.py --port 443 --camera $CAMERA --domain $DOMAIN --users "$USERS"

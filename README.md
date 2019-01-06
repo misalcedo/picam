@@ -8,6 +8,7 @@ A raspberry pi-powered home camera
 * A Raspberry Pi camera
 * An internet connection
 * A `client_secret.json` file from [Google Developer APIs](https://console.developers.google.com/apis/credentials) for OATH 2.0 authentication.
+* Create `user.env` with a space-delimited list of allowed e-mail addresses
 
 # Installation
 1. Clone the git repo into the desired host.
@@ -18,6 +19,7 @@ A raspberry pi-powered home camera
 1. Run `bin/cert` from a shell to schedule a CRON that renews the TLS certificates.
 1. Run `bin/copy-cert` to copy the certificates for your domain into the repo root.
     1. Run `bin/generate-cert` to create a self-signed TLS certificate in the repo root.
+
 1. Run `bin/run` to execute the camera.
 
 
@@ -27,3 +29,5 @@ When exposing your Pi to the Internet, make sure to change the password from the
 
 # References
 * See [pyimagesearch](https://www.pyimagesearch.com/2018/08/15/how-to-install-opencv-4-on-ubuntu/) for instructions on installing OpenCV on Ubuntu.
+* See [sign-in](https://developers.google.com/identity/sign-in/web/sign-in#before_you_begin) for JS auth sample code.
+* See [backend-auth](https://developers.google.com/identity/sign-in/web/backend-auth) for python code samples.

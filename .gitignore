@@ -4,3 +4,4 @@ picam-venv
 *.pem
 *.key
 .idea
+*.env
