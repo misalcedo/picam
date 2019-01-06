@@ -46,8 +46,7 @@ RUN mkdir -p /opt/opencv-${OPENCV_VERSION}/build && \
   -D PYTHON_EXECUTABLE=$(which python3) \
   .. && \
   make -j12 && \
-  make install && \
-  ldconfig
+  make install
 
 WORKDIR /usr/src/app
 
