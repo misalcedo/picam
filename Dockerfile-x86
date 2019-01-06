@@ -39,17 +39,15 @@ RUN mkdir /opt && cd /opt && \
 RUN mkdir -p /opt/opencv-${OPENCV_VERSION}/build && \
   cd /opt/opencv-${OPENCV_VERSION}/build && \
   cmake \
-  -D BUILD_SHARED_LIBS=OFF \
   -D CMAKE_BUILD_TYPE=RELEASE \
   -D CMAKE_INSTALL_PREFIX=/usr/local \
-  -D WITH_TBB=ON \
-  -D WITH_V4L=ON \
-  -D WITH_QT=ON \
-  -D WITH_OPENGL=ON \
+  -D OPENCV_ENABLE_NONFREE=ON \
   -D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_contrib-${OPENCV_VERSION}/modules \
+  -D PYTHON_EXECUTABLE=$(which python3) \
   .. && \
   make -j12 && \
-  make install
+  make install && \
+  ldconfig
 
 WORKDIR /usr/src/app
 

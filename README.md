@@ -24,3 +24,6 @@ A raspberry pi-powered home camera
 # Assumptions
 The `bin/copy-cert` script assumes that the Raspberry Pi's OS is Hypriot (it uses `chown` for the default hypriot user name).
 When exposing your Pi to the Internet, make sure to change the password from the default for the `pirate` user.
+
+# References
+* See [pyimagesearch](https://www.pyimagesearch.com/2018/08/15/how-to-install-opencv-4-on-ubuntu/) for instructions on installing OpenCV on Ubuntu.
