@@ -22,16 +22,15 @@ RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/${OPENCV_VERSION
   wget -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip && \
   unzip opencv.zip && unzip opencv_contrib.zip && rm -rf opencv*.zip
 
-RUN mkdir -p /opt/opencv-${OPENCV_VERSION}/build && cd /opt/opencv-${OPENCV_VERSION}/build && \
-  cmake \
+WORKDIR /opt/opencv-${OPENCV_VERSION}/build
+
+RUN cmake \
   -D CMAKE_BUILD_TYPE=RELEASE \
   -D CMAKE_INSTALL_PREFIX=/usr/local \
   -D OPENCV_ENABLE_NONFREE=ON \
   -D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_contrib-${OPENCV_VERSION}/modules \
   -D PYTHON_EXECUTABLE=$(which python3) \
-  ..
-
-RUN make -j12 && make install
+  .. && make -j12 && make install
 RUN ldconfig
 
 WORKDIR /usr/src/app
