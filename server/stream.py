@@ -22,19 +22,8 @@ class BaseStreamingHandler(BaseHTTPRequestHandler):
             self.index()
         elif self.path == '/stream.mjpg':
             self.stream()
-        elif self.path == '/still.jpg':
-            self.still()
         else:
             self.not_found()
-
-    def still(self):
-        self.send_response(200)
-        self.send_header('Age', 0)
-        self.send_header('Cache-Control', 'no-cache, private')
-        self.send_header('Pragma', 'no-cache')
-        self.send_header('Content-Type', 'image/jpeg')
-        self.end_headers()
-        self.send_frame()
 
     def stream(self):
         self.send_response(200)
