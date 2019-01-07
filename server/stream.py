@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
+from http.cookie import SimpleCookie, CookieError
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse
 
 from google.auth.transport import requests
 from google.oauth2 import id_token
@@ -47,8 +48,9 @@ PAGE = """\
             // The ID token you need to pass to your backend:
             var id_token = googleUser.getAuthResponse().id_token;
             console.log("ID Token: " + id_token);
+            document.cookie = "token=" + id_token;
             
-            document.getElementById("stream").innerHTML = '<img src="/stream.mjpg?token=' + id_token + '"/>';
+            document.getElementById("stream").innerHTML = '<img src="/stream.mjpg"/>';
             document.getElementById("login").toggleAttribute("hidden");
             document.getElementById("logout").toggleAttribute("hidden");
           }
@@ -75,7 +77,10 @@ class BaseStreamingHandler(BaseHTTPRequestHandler, ABC):
         try:
             parameters = parse_qs(url.query)
 
-            token = parameters["token"].pop()
+            cookie = SimpleCookie()
+            cookie.load(self.headers["Cookier"])
+
+            token = cookie["token"]
 
             user = id_token.verify_oauth2_token(token, requests.Request(), self.server.client_id)
 
@@ -92,7 +97,7 @@ class BaseStreamingHandler(BaseHTTPRequestHandler, ABC):
             self.send_header('Content-Type', 'multipart/x-mixed-replace; boundary=FRAME')
             self.end_headers()
             self.send_frames()
-        except ValueError as e:
+        except ValueError, CookieError as e:
             print("Invalid log in attempt.", e)
 
             self.send_error(401)
