@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from http.cookie import SimpleCookie
+from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
 from urllib.parse import urlparse
