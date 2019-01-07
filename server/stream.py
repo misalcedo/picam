@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from http.cookie import SimpleCookie, CookieError
+from http.cookie import SimpleCookie
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
 from urllib.parse import urlparse
@@ -97,7 +97,7 @@ class BaseStreamingHandler(BaseHTTPRequestHandler, ABC):
             self.send_header('Content-Type', 'multipart/x-mixed-replace; boundary=FRAME')
             self.end_headers()
             self.send_frames()
-        except ValueError, CookieError as e:
+        except e:
             print("Invalid log in attempt.", e)
 
             self.send_error(401)
