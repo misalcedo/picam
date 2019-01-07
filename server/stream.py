@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-from http.cookies import SimpleCookie
+from http.cookies import SimpleCookie, CookieError
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 
 from google.auth.transport import requests
 from google.oauth2 import id_token
@@ -78,9 +78,9 @@ class BaseStreamingHandler(BaseHTTPRequestHandler, ABC):
             parameters = parse_qs(url.query)
 
             cookie = SimpleCookie()
-            cookie.load(self.headers["Cookier"])
+            cookie.load(self.headers["Cookie"])
 
-            token = cookie["token"]
+            token = cookie["token"].value
 
             user = id_token.verify_oauth2_token(token, requests.Request(), self.server.client_id)
 
@@ -97,7 +97,7 @@ class BaseStreamingHandler(BaseHTTPRequestHandler, ABC):
             self.send_header('Content-Type', 'multipart/x-mixed-replace; boundary=FRAME')
             self.end_headers()
             self.send_frames()
-        except e:
+        except (ValueError, CookieError) as e:
             print("Invalid log in attempt.", e)
 
             self.send_error(401)
