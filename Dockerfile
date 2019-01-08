@@ -1,7 +1,5 @@
 FROM resin/raspberrypi3-python:3-onbuild
 
-EXPOSE 443
-
 RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y build-essential cmake unzip pkg-config \
     libjpeg-dev libpng-dev libtiff-dev \
@@ -10,11 +8,8 @@ RUN apt-get install -y build-essential cmake unzip pkg-config \
 
 WORKDIR /opt
 
-ARG domain
-ARG camera
-ARG port
 ARG opencv_version
-ENV CAMERA=$camera DOMAIN=$domain PORT=$port OPENCV_VERSION=$opencv_version
+ENV OPENCV_VERSION=$opencv_version
 
 RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip && \
   wget -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip && \
@@ -38,5 +33,9 @@ RUN cmake \
 RUN ldconfig
 
 WORKDIR /usr/src/app
+
+ARG port
+EXPOSE $PORT
+ENV PORT=$port
 
 CMD python3 -u main.py --port $PORT --camera $CAMERA --domain $DOMAIN --users $USERS

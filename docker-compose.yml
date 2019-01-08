@@ -7,8 +7,6 @@ services:
     build:
       context: .
       args:
-        domain: puppy-cam.salcedo.cc
-        camera: pi
         port: 443
         opencv_version: 4.0.1
     ports:
@@ -20,13 +18,11 @@ services:
       - /etc/letsencrypt/live/puppy-cam.salcedo.cc/privkey.pem:/usr/src/app/privkey.pem
       - .:/usr/src/app
   usb:
-    image: misalcedo/picam:usb
+    image: misalcedo/picam
     env_file: users.env
     build:
       context: .
       args:
-        domain: puppy-cam.salcedo.cc
-        camera: usb
         port: 443
         opencv_version: 4.0.1
     ports:
