@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 # downloads a local copy of qemu on docker-hub build machines
-sudo apt-get update
-sudo apt-get install qemu binfmt-support qemu-user-static -y
+apt-get update
+apt-get install qemu binfmt-support qemu-user-static -y
