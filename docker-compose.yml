@@ -13,7 +13,6 @@ services:
       - 1629:443
     devices:
       - /dev/vchiq
-      - /dev/video0
     volumes:
       - /etc/letsencrypt/live/puppy-cam.salcedo.cc/fullchain.pem:/usr/src/app/fullchain.pem
       - /etc/letsencrypt/live/puppy-cam.salcedo.cc/privkey.pem:/usr/src/app/privkey.pem
