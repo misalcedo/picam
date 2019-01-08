@@ -1,7 +1,7 @@
 version: '3'
 services:
   pi:
-    image: misalcedo/picam:pi
+    image: misalcedo/picam
     env_file: users.env
     build:
       context: .
@@ -19,7 +19,7 @@ services:
       - /etc/letsencrypt/live/puppy-cam.salcedo.cc/privkey.pem:/usr/src/app/privkey.pem
       - .:/usr/src/app
   usb:
-    image: misalcedo/picam:pi
+    image: misalcedo/picam
     env_file: users.env
     build:
       context: .
