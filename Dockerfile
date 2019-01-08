@@ -26,9 +26,15 @@ WORKDIR /opt/opencv-${OPENCV_VERSION}/build
 RUN cmake \
   -D CMAKE_BUILD_TYPE=RELEASE \
   -D CMAKE_INSTALL_PREFIX=/usr/local \
+  -D ENABLE_NEON=ON \
+  -D ENABLE_VFPV3=ON \
+  -D BUILD_TESTS=OFF \
   -D OPENCV_ENABLE_NONFREE=ON \
   -D OPENCV_EXTRA_MODULES_PATH=/opt/opencv_contrib-${OPENCV_VERSION}/modules \
   -D PYTHON_EXECUTABLE=$(which python3) \
+  -D INSTALL_PYTHON_EXAMPLES=OFF \
+  -D INSTALL_C_EXAMPLES=OFF \
+  -D BUILD_EXAMPLES=OFF ..
   .. && make -j12 && make install
 RUN ldconfig
 
