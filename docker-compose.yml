@@ -1,6 +1,6 @@
 version: '3'
 services:
-  pi:
+  camera:
     image: misalcedo/picam
     env_file: users.env
     restart: unless-stopped
@@ -13,21 +13,13 @@ services:
       - 1629:443
     devices:
       - /dev/vchiq
+      - /dev/video0
     volumes:
       - /etc/letsencrypt/live/puppy-cam.salcedo.cc/fullchain.pem:/usr/src/app/fullchain.pem
       - /etc/letsencrypt/live/puppy-cam.salcedo.cc/privkey.pem:/usr/src/app/privkey.pem
       - .:/usr/src/app
-  usb:
-    image: misalcedo/picam
-    env_file: users.env
-    build:
-      context: .
-      args:
-        opencv_version: 4.0.1
-        port: 443
-    ports:
-      - 1629:443
-    devices:
-      - /dev/video0
+  watchtower:
+    image: v2tec/watchtower:armhf-latest
     volumes:
-      - .:/usr/src/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30
