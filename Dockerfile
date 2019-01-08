@@ -35,7 +35,7 @@ RUN ldconfig
 WORKDIR /usr/src/app
 
 ARG port
-EXPOSE $PORT
+EXPOSE $port
 ENV PORT=$port
 
 CMD python3 -u main.py --port $PORT --camera $CAMERA --domain $DOMAIN --users $USERS
