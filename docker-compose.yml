@@ -7,8 +7,8 @@ services:
     build:
       context: .
       args:
-        port: 443
         opencv_version: 4.0.1
+        port: 443
     ports:
       - 1629:443
     devices:
@@ -23,8 +23,8 @@ services:
     build:
       context: .
       args:
-        port: 443
         opencv_version: 4.0.1
+        port: 443
     ports:
       - 1629:443
     devices:
