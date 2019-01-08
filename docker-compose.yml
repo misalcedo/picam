@@ -1,14 +1,15 @@
 version: '3'
 services:
   pi:
-    image: puppy-cam:pi
+    image: misalcedo/picam:pi
     env_file: users.env
     build:
       context: .
-      dockerfile: Dockerfile-arm
       args:
         domain: puppy-cam.salcedo.cc
         camera: pi
+        port: 443
+        opencv_version: 4.0.1
     ports:
       - 1629:443
     devices:
@@ -18,15 +19,18 @@ services:
       - /etc/letsencrypt/live/puppy-cam.salcedo.cc/privkey.pem:/usr/src/app/privkey.pem
       - .:/usr/src/app
   usb:
-    image: puppy-cam:usb
+    image: misalcedo/picam:pi
     env_file: users.env
     build:
       context: .
-      dockerfile: Dockerfile-x86
       args:
         domain: Fayt
         camera: usb
+        port: 443
+        opencv_version: 4.0.1
     ports:
       - 1629:443
     devices:
       - /dev/video0
+    volumes:
+      - .:/usr/src/app

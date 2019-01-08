@@ -2,7 +2,7 @@
 
 # Update the repos and install python3
 sudo apt-get update
-sudo apt-get install python3 python3-pip python3-venv tmux vim dnsutils curl -y
+sudo apt-get install python3 python3-pip python3-venv tmux vim dnsutils curl qemu binfmt-support qemu-user-static -y
 
 # Create a virtual environment
 python3 -m venv picam-venv

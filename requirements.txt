@@ -3,3 +3,4 @@ google-auth==1.6.2
 google-auth-oauthlib==0.2.0
 google-auth-httplib2==0.0.3
 requests==2.21.0
+numpy==1.15

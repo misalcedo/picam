@@ -1,20 +1,19 @@
-FROM python:3
+FROM resin/raspberrypi3-python:3-onbuild
 
 EXPOSE 443
 
 ARG domain
 ARG camera
+ARG port
+ARG opencv_version
 
-ENV CAMERA=$camera DOMAIN=$domain OPENCV_VERSION=4.0.1
+ENV CAMERA=$camera DOMAIN=$domain PORT=$port OPENCV_VERSION=$opencv_version
 
 RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y build-essential cmake unzip pkg-config \
     libjpeg-dev libpng-dev libtiff-dev \
     libavcodec-dev libavformat-dev libswscale-dev libv4l-dev \
     libxvidcore-dev libx264-dev libgtk-3-dev libatlas-base-dev gfortran
-
-COPY requirements-usb.txt ./
-RUN pip install --no-cache-dir -r requirements-usb.txt
 
 WORKDIR /opt
 
@@ -35,9 +34,4 @@ RUN ldconfig
 
 WORKDIR /usr/src/app
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-
-CMD python3 -u main.py --port 443 --camera $CAMERA --domain $DOMAIN --users "$USERS"
+CMD python3 -u main.py --port $PORT --camera $CAMERA --domain $DOMAIN --users $USERS
