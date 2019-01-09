@@ -30,10 +30,13 @@ def main():
     parser.add_argument("--users", help="The list of email addresses allowed to access the web-cam.",
                         nargs='+',
                         default=[])
+    parser.add_argument("--favicon", help="The file path to the favicon.ico file.",
+                        default="favicon.ico")
 
     namespace = parser.parse_args()
 
     client_id = load_client_id(namespace)
+    favicon = load_favicon(namespace)
 
     web_cam = create_camera(namespace.camera)
     web_cam.record()
@@ -44,7 +47,7 @@ def main():
 
         server = StreamingServer(server_address=(namespace.host, namespace.port), handler_class=StreamingHandler,
                                  frames=web_cam.frames(), client_id=client_id,
-                                 users=namespace.users)
+                                 users=namespace.users, favicon=favicon)
         server.socket = context.wrap_socket(server.socket, server_side=True)
 
         print("Started web-cam server with arguments:", namespace)
@@ -52,6 +55,11 @@ def main():
         server.serve_forever()
     finally:
         web_cam.stop()
+
+
+def load_favicon(namespace):
+    with open(namespace.favicon, 'rb') as file:
+        return file.read()
 
 
 def load_client_id(namespace):

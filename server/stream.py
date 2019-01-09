@@ -71,8 +71,7 @@ class BaseStreamingHandler(BaseHTTPRequestHandler, ABC):
         elif url.path == '/stream.mjpg':
             self.stream(url)
         elif url.path == '/favicon.ico':
-            with open('favicon.ico', 'rb') as file:
-                self.wfile.write(file.read())
+            self.wfile.write(self.server.favicon)
         else:
             self.not_found()
 
@@ -138,8 +137,9 @@ class StreamingServer(ThreadingMixIn, HTTPServer):
     allow_reuse_address = True
     daemon_threads = True
 
-    def __init__(self, frames, client_id, users, server_address, handler_class):
+    def __init__(self, frames, client_id, users, favicon, server_address, handler_class):
         self.frames = frames
         self.client_id = client_id
         self.users = users
+        self.favicon = favicon
         super().__init__(server_address, handler_class)
