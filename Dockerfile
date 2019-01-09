@@ -1,10 +1,11 @@
 FROM resin/raspberrypi3-python:3-onbuild
 
-RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y build-essential cmake unzip pkg-config \
-    libjpeg-dev libpng-dev libtiff-dev \
-    libavcodec-dev libavformat-dev libswscale-dev libv4l-dev \
-    libxvidcore-dev libx264-dev libgtk-3-dev libatlas-base-dev gfortran
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential cmake unzip pkg-config libjpeg-dev libpng-dev libtiff-dev \
+        libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev \
+        libx264-dev libgtk-3-dev libatlas-base-dev gfortran && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt
 
