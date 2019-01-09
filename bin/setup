@@ -8,6 +8,6 @@ sudo apt-get install python3 python3-pip python3-venv tmux vim dnsutils curl qem
 python3 -m venv picam-venv
 
 # Enable Pi Camera as /dev/video0
-sudo modprobe bcm2835-v4l2
+sudo modprobe bcm2835-v4l2 # or add bcm2835-v412 to the end of /etc/modules
 
 echo "Setup complete. Don't forget to run 'sudo raspi-config' to enable the camera module".
