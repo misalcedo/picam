@@ -75,21 +75,7 @@ class BaseStreamingHandler(BaseHTTPRequestHandler, ABC):
 
     def stream(self, url):
         try:
-            parameters = parse_qs(url.query)
-
-            cookie = SimpleCookie()
-            cookie.load(self.headers["Cookie"])
-
-            token = cookie["token"].value
-
-            user = id_token.verify_oauth2_token(token, requests.Request(), self.server.client_id)
-
-            if user['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-                raise ValueError('Wrong issuer.')
-
-            if user["email"] not in self.server.users:
-                raise ValueError("Invalid user '%s'." % user["email"])
-
+            self.authorize(url)
             self.send_response(200)
             self.send_header('Age', 0)
             self.send_header('Cache-Control', 'no-cache, private')
@@ -102,6 +88,25 @@ class BaseStreamingHandler(BaseHTTPRequestHandler, ABC):
 
             self.send_error(401)
             self.end_headers()
+
+    def authorize(self, url):
+        if not self.server.users:
+            return
+
+        parameters = parse_qs(url.query)
+
+        cookie = SimpleCookie()
+        cookie.load(self.headers["Cookie"])
+
+        token = cookie["token"].value
+
+        user = id_token.verify_oauth2_token(token, requests.Request(), self.server.client_id)
+
+        if user['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+            raise ValueError('Wrong issuer.')
+
+        if user["email"] not in self.server.users:
+            raise ValueError("Invalid user '%s'." % user["email"])
 
     def not_found(self):
         self.send_error(404)
