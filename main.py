@@ -13,7 +13,7 @@ def main():
     parser = argparse.ArgumentParser(description="A home security camera server.")
     parser.add_argument("--camera", help="The type of camera to use.",
                         choices=["pi", "stub", "usb"],
-                        default="pi")
+                        default="usb")
     parser.add_argument("--port", help="The TCP port to listen on.",
                         type=int,
                         default=1629)
@@ -28,7 +28,7 @@ def main():
     parser.add_argument("--secrets", help="The file path to the Google API's client-secrets JSON file.",
                         default="client_secret.json")
     parser.add_argument("--users", help="The list of email addresses allowed to access the web-cam.",
-                        nargs='+',
+                        nargs='*',
                         default=[])
     parser.add_argument("--favicon", help="The file path to the favicon.ico file.",
                         default="favicon.ico")
