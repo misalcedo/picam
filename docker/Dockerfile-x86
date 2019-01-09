@@ -18,6 +18,9 @@ RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/${OPENCV_VERSION
 
 WORKDIR /opt/opencv-${OPENCV_VERSION}/build
 
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt
+
 RUN cmake \
   -D CMAKE_BUILD_TYPE=RELEASE \
   -D CMAKE_INSTALL_PREFIX=/usr/local \
@@ -38,6 +41,5 @@ EXPOSE $port
 ENV PORT=$port
 
 COPY . .
-RUN pip3 install -r requirements.txt
 
 CMD python3 -u main.py --port $PORT --camera $CAMERA --domain $DOMAIN --users $USERS
