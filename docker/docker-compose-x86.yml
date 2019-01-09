@@ -1,0 +1,4 @@
+version: '3'
+services:
+  camera:
+    image: misalcedo/picam:x86-latest

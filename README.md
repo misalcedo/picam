@@ -21,7 +21,11 @@ A raspberry pi-powered home camera
 1. Run `bin/copy-cert` to copy the certificates for your domain into the repo root.
     1. Run `bin/generate-cert` to create a self-signed TLS certificate in the repo root.
 1. Run `bin/run` to execute the camera.
+    1. Or run `TAG=<TAG> bin/docker-compose up`, where `<TAG>` is one of: `x86`, `pi3`, `zero`.
 
+# Build
+To build the images run: `TAG=build bin/docker-compose build x86 zero pi3` from the root of the repo.
+Then, run `TAG=build bin/docker-compose push x86 zero pi3` to publish the images to Docker Hub.
 
 # Assumptions
 The `bin/copy-cert` script assumes that the Raspberry Pi's OS is Hypriot (it uses `chown` for the default hypriot user name).

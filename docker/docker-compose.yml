@@ -2,13 +2,8 @@ version: '3'
 services:
   camera:
     image: misalcedo/picam
-    env_file: users.env
+    env_file: ../users.env
     restart: unless-stopped
-    build:
-      context: .
-      args:
-        opencv_version: 4.0.1
-        port: 443
     ports:
       - 1629:443
     devices:
@@ -16,7 +11,7 @@ services:
     volumes:
       - ${CERTS}/fullchain.pem:/usr/src/app/fullchain.pem
       - ${CERTS}/privkey.pem:/usr/src/app/privkey.pem
-      - .:/usr/src/app
+      - ..:/usr/src/app
   watchtower:
     image: v2tec/watchtower:armhf-latest
     restart: unless-stopped
