@@ -16,9 +16,6 @@ services:
     volumes:
       - ${CERTS}/fullchain.pem:/usr/src/app/fullchain.pem
       - ${CERTS}/privkey.pem:/usr/src/app/privkey.pem
-    environment:
-      DEVICE: vchiq
-      CERTS: /etc/letsencrypt/live/puppy-cam.salcedo.cc
   watchtower:
     image: v2tec/watchtower:armhf-latest
     volumes:
