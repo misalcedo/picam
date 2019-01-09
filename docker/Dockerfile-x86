@@ -37,7 +37,7 @@ ARG port
 EXPOSE $port
 ENV PORT=$port
 
-COPY .. .
+COPY . .
 RUN pip3 install -r requirements.txt
 
 CMD python3 -u main.py --port $PORT --camera $CAMERA --domain $DOMAIN --users $USERS
