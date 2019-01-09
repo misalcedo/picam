@@ -2,13 +2,3 @@ version: '3'
 services:
   camera:
     image: misalcedo/picam:zero-latest
-    env_file: ../users.env
-    restart: unless-stopped
-    ports:
-      - 1629:443
-    devices:
-      - /dev/video0
-    volumes:
-      - ${CERTS}/fullchain.pem:/usr/src/app/fullchain.pem
-      - ${CERTS}/privkey.pem:/usr/src/app/privkey.pem
-      - .:/usr/src/app
