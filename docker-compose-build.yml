@@ -3,7 +3,7 @@ services:
   x86:
     image: misalcedo/picam:x86-latest
     build:
-      context: ..
+      context: ""
       dockerfile: docker/Dockerfile-x86
       args:
         opencv_version: 4.0.1
@@ -11,7 +11,7 @@ services:
   zero:
     image: misalcedo/picam:zero-latest
     build:
-      context: ..
+      context: ""
       dockerfile: docker/Dockerfile-zero
       args:
         opencv_version: 4.0.1
@@ -19,7 +19,7 @@ services:
   pi3:
     image: misalcedo/picam:pi3-latest
     build:
-      context: ..
+      context: ""
       dockerfile: docker/Dockerfile-pi3
       args:
         opencv_version: 4.0.1
