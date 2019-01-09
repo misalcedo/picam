@@ -70,6 +70,9 @@ class BaseStreamingHandler(BaseHTTPRequestHandler, ABC):
             self.index()
         elif url.path == '/stream.mjpg':
             self.stream(url)
+        elif url.path == '/favicon.ico':
+            with open('favicon.ico', 'rb') as file:
+                self.wfile.write(file.read())
         else:
             self.not_found()
 
