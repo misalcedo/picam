@@ -5,3 +5,4 @@ picam-venv
 *.key
 .idea
 *.env
+.vscode
