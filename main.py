@@ -1,19 +1,21 @@
 import argparse
-import ssl
-import json
 import asyncio
+import json
+import ssl
+
 import uvloop
+from aiohttp import web
+
 from server.handler import StreamingHandler
 from server.stream import StreamingServer
 
 
 def main():
     namespace = parse_arguments()
-
     client_id = load_client_id(namespace)
     favicon = load_favicon(namespace)
-
     web_cam = create_camera(namespace.camera)
+
     web_cam.record()
 
     try:
@@ -54,8 +56,7 @@ def parse_arguments():
 
 
 def serve(client_id, favicon, web_cam, namespace):
-    context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-    context.load_cert_chain(namespace.cert, namespace.key)
+    context = load_ssl_context(namespace)
 
     server = StreamingServer(server_address=(namespace.host, namespace.port), handler_class=StreamingHandler,
                              frames=web_cam.frames(), client_id=client_id,
@@ -66,6 +67,12 @@ def serve(client_id, favicon, web_cam, namespace):
     print("Started web-cam server with arguments:", namespace)
 
     server.serve_forever()
+
+
+def load_ssl_context(namespace):
+    context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    context.load_cert_chain(namespace.cert, namespace.key)
+    return context
 
 
 def load_favicon(namespace):
@@ -93,6 +100,24 @@ def create_camera(name):
     return Camera()
 
 
+def server_async():
+    from views.login import LoginView
+    from views.home import HomeView
+    from views.camera import CameraView
+
+    namespace = parse_arguments()
+    context = load_ssl_context(namespace)
+
+    app = web.Application()
+    app.add_routes([
+        web.view('/login', LoginView),
+        web.view('/', HomeView),
+        web.view('/camera', CameraView)
+    ])
+
+    web.run_app(app, ssl_context=context)
+
+
 if __name__ == '__main__':
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    main()
+    server_async()
