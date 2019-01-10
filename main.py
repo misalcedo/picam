@@ -110,6 +110,9 @@ def server_async():
 
     namespace = parse_arguments()
     context = load_ssl_context(namespace)
+    web_cam = create_camera(namespace.camera)
+
+    web_cam.record()
 
     app = web.Application()
     app.add_routes([
@@ -119,6 +122,7 @@ def server_async():
     ])
     app.router.add_static('/static', path='static', name='static')
     app['client_id'] = load_client_id(namespace)
+    app['camera'] = web_cam
 
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
 

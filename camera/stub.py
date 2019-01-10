@@ -8,7 +8,7 @@ class StubCamera(Camera):
     def __init__(self):
         self.buffer = LatestFrame()
         
-        with open('stub.jpg', 'rb') as f:
+        with open('static/stub.jpg', 'rb') as f:
             self.frame = f.read()
     
     @property

@@ -8,9 +8,6 @@ class StreamingHandler(BaseStreamingHandler):
             self.server.frames.condition.wait()
             return self.server.frames.frame
 
-    def send_frame(self):
-        self.wfile.write(self.read_frame())
-
     def send_frames(self):
         try:
             while True:
