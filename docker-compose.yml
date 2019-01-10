@@ -1,20 +1,26 @@
 version: '3'
 services:
-  camera:
-    image: misalcedo/picam
-    env_file: users.env
-    restart: unless-stopped
-    ports:
-      - 1629:443
-    devices:
-      - /dev/video0
-    volumes:
-      - ${CERTS}/fullchain.pem:/usr/src/app/fullchain.pem
-      - ${CERTS}/privkey.pem:/usr/src/app/privkey.pem
-      - .:/usr/src/app
-  watchtower:
-    image: v2tec/watchtower:armhf-latest
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 30
+  x86:
+    image: misalcedo/picam:x86-latest
+    build:
+      context: ""
+      dockerfile: docker/Dockerfile-x86
+      args:
+        opencv_version: 4.0.1
+        port: 443
+  zero:
+    image: misalcedo/picam:zero-latest
+    build:
+      context: ""
+      dockerfile: docker/Dockerfile-zero
+      args:
+        opencv_version: 4.0.1
+        port: 443
+  pi3:
+    image: misalcedo/picam:pi3-latest
+    build:
+      context: ""
+      dockerfile: docker/Dockerfile-pi3
+      args:
+        opencv_version: 4.0.1
+        port: 443
