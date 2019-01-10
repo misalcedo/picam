@@ -4,3 +4,16 @@ google-auth-oauthlib==0.2.0
 google-auth-httplib2==0.0.3
 requests==2.21.0
 numpy==1.15
+uvloop==0.11.3
+aiohttp==3.5.1
+aiohttp-security==0.4.0
+aiohttp_session==2.7.0
+aiohttp-jinja2==1.1.0
+aiohttp-debugtoolbar==0.5.0
+aiohttp-flashbag==0.0.3
+aiomonitor==0.4.0
+async-timeout==3.0.1
+aiohttp-sse==2.0.0
+aiojobs==0.2.2
+aiohttp-remotes==0.1.2
+aiohttp-devtools==0.11
