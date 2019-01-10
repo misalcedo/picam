@@ -1,6 +1,8 @@
 import argparse
 import ssl
 import json
+import asyncio
+import uvloop
 from server.handler import StreamingHandler
 from server.stream import StreamingServer
 
@@ -42,19 +44,24 @@ def main():
     web_cam.record()
 
     try:
-        context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-        context.load_cert_chain(namespace.cert, namespace.key)
-
-        server = StreamingServer(server_address=(namespace.host, namespace.port), handler_class=StreamingHandler,
-                                 frames=web_cam.frames(), client_id=client_id,
-                                 users=namespace.users, favicon=favicon)
-        server.socket = context.wrap_socket(server.socket, server_side=True)
-
-        print("Started web-cam server with arguments:", namespace)
-
-        server.serve_forever()
+        serve(client_id, favicon, web_cam, namespace)
     finally:
         web_cam.stop()
+
+
+def serve(client_id, favicon, web_cam, namespace):
+    context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    context.load_cert_chain(namespace.cert, namespace.key)
+
+    server = StreamingServer(server_address=(namespace.host, namespace.port), handler_class=StreamingHandler,
+                             frames=web_cam.frames(), client_id=client_id,
+                             users=namespace.users, favicon=favicon)
+
+    server.socket = context.wrap_socket(server.socket, server_side=True)
+
+    print("Started web-cam server with arguments:", namespace)
+
+    server.serve_forever()
 
 
 def load_favicon(namespace):
@@ -83,4 +90,5 @@ def create_camera(name):
 
 
 if __name__ == '__main__':
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     main()
