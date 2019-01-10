@@ -41,9 +41,9 @@ def parse_arguments():
     parser.add_argument("--domain", help="The host interface to listen on.",
                         default="puppy-cam.salcedo.cc")
     parser.add_argument("--cert", help="The file path to the TLS certificate.",
-                        default="fullchain.pem")
+                        default="resources/fullchain.pem")
     parser.add_argument("--key", help="The file path to the TLS certificate key.",
-                        default="privkey.pem")
+                        default="resources/privkey.pem")
     parser.add_argument("--secrets", help="The file path to the Google API's client-secrets JSON file.",
                         default="client_secret.json")
     parser.add_argument("--users", help="The list of email addresses allowed to access the web-cam.",
@@ -105,6 +105,9 @@ def server_async():
     from views.home import HomeView
     from views.camera import CameraView
 
+    import aiohttp_jinja2
+    import jinja2
+
     namespace = parse_arguments()
     context = load_ssl_context(namespace)
 
@@ -114,6 +117,10 @@ def server_async():
         web.view('/', HomeView),
         web.view('/camera', CameraView)
     ])
+    app.router.add_static('/static', path='static', name='static')
+    app['client_id'] = load_client_id(namespace)
+
+    aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
 
     web.run_app(app, ssl_context=context)
 

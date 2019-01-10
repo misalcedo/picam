@@ -1,8 +1,8 @@
-from aiohttp.web import View, Response
+from aiohttp.web import View
+import aiohttp_jinja2
 
 
 class HomeView(View):
-    """The handler for the streaming web-cam server."""
+    @aiohttp_jinja2.template('index.html.jinja2')
     async def get(self):
-        return Response(text="Hello, World!")
-
+        return {'client_id': self.request.app['client_id']}
