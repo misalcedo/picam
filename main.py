@@ -8,6 +8,21 @@ from server.stream import StreamingServer
 
 
 def main():
+    namespace = parse_arguments()
+
+    client_id = load_client_id(namespace)
+    favicon = load_favicon(namespace)
+
+    web_cam = create_camera(namespace.camera)
+    web_cam.record()
+
+    try:
+        serve(client_id, favicon, web_cam, namespace)
+    finally:
+        web_cam.stop()
+
+
+def parse_arguments():
     """
     Sample usage:
         python3 main.py --camera pi --port 1629 --domain localhost --host localhost
@@ -34,19 +49,8 @@ def main():
                         default=[])
     parser.add_argument("--favicon", help="The file path to the favicon.ico file.",
                         default="favicon.ico")
-
     namespace = parser.parse_args()
-
-    client_id = load_client_id(namespace)
-    favicon = load_favicon(namespace)
-
-    web_cam = create_camera(namespace.camera)
-    web_cam.record()
-
-    try:
-        serve(client_id, favicon, web_cam, namespace)
-    finally:
-        web_cam.stop()
+    return namespace
 
 
 def serve(client_id, favicon, web_cam, namespace):
