@@ -16,20 +16,21 @@ class CameraView(View):
 
         await response.prepare(self.request)
 
-        while True:
-            try:
-                frame = self.request.app['camera'].frames().frame
+        web_cam = self.request.app['camera']
 
-                await response.write(b'--FRAME\r\n')
-                await response.write(b'Content-Type: image/jpeg\r\n')
-                await response.write(b'Content-Length: ')
-                await response.write(str(len(frame)).encode('utf-8'))
-                await response.write(b'\r\n\r\n')
+        try:
+            while web_cam.is_recording():
+                async with web_cam as frame:
+                    await response.write(b'--FRAME\r\n')
+                    await response.write(b'Content-Type: image/jpeg\r\n')
+                    await response.write(b'Content-Length: ')
+                    await response.write(str(len(frame)).encode('utf-8'))
+                    await response.write(b'\r\n\r\n')
 
-                await response.write(frame)
-                await response.write(b'\r\n')
-            except Exception as e:
-                logging.debug('Removed streaming client: {}', repr(e))
-                raise
+                    await response.write(frame)
+                    await response.write(b'\r\n')
+        except Exception as e:
+            logging.debug('Removed streaming client: {}', repr(e))
+            raise
 
         return response

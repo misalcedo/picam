@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 import json
+import logging
 import ssl
 
 import uvloop
@@ -93,7 +94,7 @@ def create_camera(name):
     elif name == "stub":
         from camera.stub import StubCamera as Camera
     elif name == "usb":
-        from camera.usb import UsbCamera as Camera
+        from camera.usb import UsbCameraAsync as Camera
     else:
         return None
 
@@ -106,13 +107,12 @@ def server_async():
     from views.camera import CameraView
 
     import aiohttp_jinja2
+    from aiojobs.aiohttp import setup as aiojobs_setup
     import jinja2
 
     namespace = parse_arguments()
     context = load_ssl_context(namespace)
     web_cam = create_camera(namespace.camera)
-
-    web_cam.record()
 
     app = web.Application()
     app.add_routes([
@@ -126,9 +126,22 @@ def server_async():
 
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
 
+    aiojobs_setup(app)
+
+    app.on_startup.append(lambda a: record(a, web_cam))
+    app.on_cleanup.append(web_cam.stop)
+
     web.run_app(app, port=namespace.port, host=namespace.host, ssl_context=context)
 
 
+async def record(app, web_cam):
+    import aiojobs
+
+    scheduler = await aiojobs.create_scheduler()
+    await scheduler.spawn(web_cam.record(app))
+
 if __name__ == '__main__':
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+    logging.basicConfig(level=logging.DEBUG)
     server_async()
+
