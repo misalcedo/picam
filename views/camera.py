@@ -19,7 +19,7 @@ class CameraView(View):
         web_cam = self.request.app['camera']
 
         try:
-            while web_cam.is_recording():
+            while await web_cam.is_recording():
                 async with web_cam as frame:
                     await response.write(b'--FRAME\r\n')
                     await response.write(b'Content-Type: image/jpeg\r\n')

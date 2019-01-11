@@ -3,7 +3,7 @@ import threading
 import time
 
 from aiorwlock import RWLock
-from asyncio import Condition, sleep
+from asyncio import Event, sleep
 import cv2
 
 
@@ -48,15 +48,14 @@ class UsbCameraAsync:
         self.seconds_per_frame = 1 / frames_per_second
         self.orientation = orientation
         self.video_stream = cv2.VideoCapture(source)
-        self.lock = None
+        self.event = Event()
+        self.lock = RWLock()
         self.frame = None
 
     async def is_recording(self):
         return self.video_stream.isOpened()
 
     async def record(self, app):
-        self.lock = RWLock()
-
         while await self.is_recording():
             success, frame = self.video_stream.read()
             if success:
@@ -71,6 +70,8 @@ class UsbCameraAsync:
         if encoded:
             async with self.lock.writer:
                 self.frame = image.tobytes()
+                self.event.set()
+                self.event.clear()
         else:
             logging.debug("Failed to encode camera frame as JPEG.")
 
@@ -81,7 +82,9 @@ class UsbCameraAsync:
         self.video_stream.release()
 
     async def __aenter__(self):
+        await self.event.wait()
         await self.lock.reader.__aenter__()
+
         return self.frame
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
