@@ -19,3 +19,4 @@ aiohttp-sse==2.0.0
 aiojobs==0.2.2
 aiohttp-remotes==0.1.2
 aiohttp-devtools==0.11
+aiorwlock==0.6.0

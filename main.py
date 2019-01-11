@@ -126,7 +126,7 @@ def server_async():
 
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
 
-    web.run_app(app, ssl_context=context)
+    web.run_app(app, port=namespace.port, host=namespace.host, ssl_context=context)
 
 
 if __name__ == '__main__':
