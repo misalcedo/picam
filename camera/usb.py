@@ -44,9 +44,10 @@ class UsbCamera(Camera):
 class UsbCameraAsync:
     """A camera implementation that uses an asynchronous USB-based camera."""
 
-    def __init__(self, source=0, frames_per_second=24, orientation=-1):
+    def __init__(self, source=0, frames_per_second=24, orientation=-1, encoding='.jpg'):
         self.seconds_per_frame = 1 / frames_per_second
         self.orientation = orientation
+        self.encoding = encoding
         self.video_stream = cv2.VideoCapture(source)
         self.event = Event()
         self.lock = RWLock()
@@ -59,13 +60,14 @@ class UsbCameraAsync:
         while await self.is_recording():
             success, frame = self.video_stream.read()
             if success:
-                await self.encode_frame(frame)
+                await self.update_frame(frame)
                 await sleep(self.seconds_per_frame)
             else:
                 logging.debug("Failed to read camera frame.")
 
-    async def encode_frame(self, frame):
-        encoded, image = cv2.imencode('.jpg', await self.flip_frame(frame))
+    async def update_frame(self, frame):
+        flipped_frame = await self.flip_frame(frame)
+        encoded, image = await self.encode_frame(flipped_frame)
 
         if encoded:
             async with self.lock.writer:
@@ -74,6 +76,9 @@ class UsbCameraAsync:
                 self.event.clear()
         else:
             logging.debug("Failed to encode camera frame as JPEG.")
+
+    async def encode_frame(self, frame):
+        return cv2.imencode(self.encoding, frame)
 
     async def flip_frame(self, frame):
         return cv2.flip(frame, self.orientation)
