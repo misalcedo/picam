@@ -4,6 +4,7 @@ import time
 
 from aiorwlock import RWLock
 from asyncio import Event, sleep
+import aiojobs
 import cv2
 
 
@@ -48,15 +49,32 @@ class UsbCameraAsync:
         self.seconds_per_frame = 1 / frames_per_second
         self.orientation = orientation
         self.encoding = encoding
-        self.video_stream = cv2.VideoCapture(source)
+        self.source = source
         self.event = Event()
         self.lock = RWLock()
+
+        self.video_stream = None
+        self.tasks = None
         self.frame = None
 
-    async def is_recording(self):
-        return self.video_stream.isOpened()
+    async def stop(self, _):
+        await self.tasks.close()
+        await self.release_video()
+
+        self.tasks = None
+        self.video_stream = None
+
+    async def release_video(self):
+        self.video_stream.release()
 
     async def record(self, app):
+        if not self.tasks:
+            self.video_stream = cv2.VideoCapture(self.source)
+            self.tasks = await aiojobs.create_scheduler()
+
+            await self.tasks.spawn(self.update(app))
+
+    async def update(self, _):
         while await self.is_recording():
             success, frame = self.video_stream.read()
             if success:
@@ -64,6 +82,9 @@ class UsbCameraAsync:
                 await sleep(self.seconds_per_frame)
             else:
                 logging.debug("Failed to read camera frame.")
+
+    async def is_recording(self):
+        return self.video_stream.isOpened()
 
     async def update_frame(self, frame):
         flipped_frame = await self.flip_frame(frame)
@@ -82,9 +103,6 @@ class UsbCameraAsync:
 
     async def flip_frame(self, frame):
         return cv2.flip(frame, self.orientation)
-
-    async def stop(self, app):
-        self.video_stream.release()
 
     async def __aenter__(self):
         await self.event.wait()

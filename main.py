@@ -31,6 +31,7 @@ def parse_arguments():
         python3 main.py --camera pi --port 1629 --domain localhost --host localhost
     """
     parser = argparse.ArgumentParser(description="A home security camera server.")
+
     parser.add_argument("--camera", help="The type of camera to use.",
                         choices=["pi", "stub", "usb"],
                         default="usb")
@@ -46,14 +47,14 @@ def parse_arguments():
     parser.add_argument("--key", help="The file path to the TLS certificate key.",
                         default="resources/privkey.pem")
     parser.add_argument("--secrets", help="The file path to the Google API's client-secrets JSON file.",
-                        default="client_secret.json")
+                        default="resources/client_secret.json")
     parser.add_argument("--users", help="The list of email addresses allowed to access the web-cam.",
                         nargs='*',
                         default=[])
     parser.add_argument("--favicon", help="The file path to the favicon.ico file.",
                         default="favicon.ico")
-    namespace = parser.parse_args()
-    return namespace
+
+    return parser.parse_args()
 
 
 def serve(client_id, favicon, web_cam, namespace):
@@ -132,17 +133,11 @@ def server_async():
 
     aiojobs_setup(app)
 
-    app.on_startup.append(lambda a: record(a, web_cam))
+    app.on_startup.append(web_cam.record)
     app.on_cleanup.append(web_cam.stop)
 
     web.run_app(app, port=namespace.port, host=namespace.host, ssl_context=context)
 
-
-async def record(app, web_cam):
-    import aiojobs
-
-    scheduler = await aiojobs.create_scheduler()
-    await scheduler.spawn(web_cam.record(app))
 
 if __name__ == '__main__':
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
