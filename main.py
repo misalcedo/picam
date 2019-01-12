@@ -4,11 +4,22 @@ import json
 import logging
 import ssl
 
+import aiohttp_jinja2
+import jinja2
 import uvloop
 from aiohttp import web
+from aiohttp_debugtoolbar import setup as setup_toolbar
+from aiohttp_security import SessionIdentityPolicy, setup as setup_security
+from aiohttp_session import SimpleCookieStorage, session_middleware
+from aiojobs.aiohttp import setup as setup_jobs
 
+from auth.policy import AuthorizationPolicy
 from server.handler import StreamingHandler
 from server.stream import StreamingServer
+from views.auth import AuthView
+from views.camera import CameraView
+from views.home import HomeView
+from views.login import LoginView
 
 
 def main():
@@ -82,10 +93,10 @@ def load_favicon(namespace):
         return file.read()
 
 
-def load_client_id(namespace):
+def load_client_secret(namespace):
     """Loads the client id from the client secret JSON file."""
     with open(namespace.secrets) as secret:
-        return json.load(secret)["web"]["client_id"]
+        return json.load(secret)["web"]
 
 
 def create_camera(name):
@@ -103,44 +114,54 @@ def create_camera(name):
 
 
 def server_async():
-    from views.login import LoginView
-    from views.auth import AuthView
-    from views.home import HomeView
-    from views.camera import CameraView
-
-    import aiohttp_jinja2
-    from aiojobs.aiohttp import setup as aiojobs_setup
-    import jinja2
-
     namespace = parse_arguments()
     context = load_ssl_context(namespace)
     web_cam = create_camera(namespace.camera)
 
-    app = web.Application()
+    middleware = session_middleware(SimpleCookieStorage())
+
+    app = web.Application(middlewares=[middleware])
+
+    add_configuration(app, namespace, web_cam)
+    setup_plugins(app)
+    add_signals(app, web_cam)
+    add_routes(app)
+
+    web.run_app(app, port=namespace.port, host=namespace.host, ssl_context=context)
+
+
+def add_configuration(app, namespace, web_cam):
+    client_secret = load_client_secret(namespace)
+
+    app['client_id'] = client_secret['client_id']
+    app['client_secret'] = client_secret['client_secret']
+    app['camera'] = web_cam
+    app['users'] = namespace.users
+
+
+def setup_plugins(app):
+    setup_toolbar(app)
+    aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
+    setup_jobs(app)
+    setup_security(app, SessionIdentityPolicy(), AuthorizationPolicy())
+
+
+def add_signals(app, web_cam):
+    app.on_startup.append(web_cam.record)
+    app.on_cleanup.append(web_cam.stop)
+
+
+def add_routes(app):
     app.add_routes([
         web.view('/login', LoginView),
-        web.view('/oauth', AuthView),
+        web.view('/oauth', AuthView, name='auth'),
         web.view('/', HomeView),
         web.view('/camera', CameraView)
     ])
     app.router.add_static('/', path='static', name='static')
-    app['client_id'] = load_client_id(namespace)
-    app['camera'] = web_cam
-    app['domain'] = namespace.domain
-    app['port'] = namespace.port
-
-    aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
-
-    aiojobs_setup(app)
-
-    app.on_startup.append(web_cam.record)
-    app.on_cleanup.append(web_cam.stop)
-
-    web.run_app(app, port=namespace.port, host=namespace.host, ssl_context=context)
 
 
 if __name__ == '__main__':
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     logging.basicConfig(level=logging.DEBUG)
     server_async()
-

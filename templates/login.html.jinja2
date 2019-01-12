@@ -1,13 +1,6 @@
 <html>
     <head>
         <title>Puppy Cam</title>
-
-        <meta name="google-signin-scope" content="profile email">
-        <meta name="google-signin-client_id" content="{{ client_id }}">
-        <meta name="google-signin-ux_mode" content="redirect">
-        <meta name="google-signin-redirect_uri" content="https://{{ domain }}:{{ 1629 }}/oauth">
-
-        <script src="https://apis.google.com/js/platform.js" async defer></script>
     </head>
     <body>
         <h1>Puppy Cam</h1>
@@ -15,6 +8,8 @@
             You must be logged in to access the camera stream.
         </p>
 
-        <div class="g-signin2"></div>
+        <form method="POST">
+            <input type="submit">Sign In</>
+        </form>
     </body>
 </html>

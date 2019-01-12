@@ -1,12 +1,18 @@
 import logging
 
-from aiohttp.web import View, StreamResponse
+from aiohttp.web import StreamResponse
+from aiohttp_security import check_permission
+
+from auth.permissions import STREAM
+from views.base import BaseView
 
 
-class CameraView(View):
+class CameraView(BaseView):
     """The handler for the streaming web-cam server."""
 
     async def get(self):
+        await check_permission(self.request, STREAM, self.request.app)
+
         response = StreamResponse(status=200, reason='OK', headers={
             'Age': '0',
             'Cache-Control': 'no-cache, private',

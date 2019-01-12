@@ -38,3 +38,4 @@ When exposing your Pi to the Internet, make sure to change the password from the
 * See [sign-in](https://developers.google.com/identity/sign-in/web/sign-in#before_you_begin) for JS auth sample code.
 * See [backend-auth](https://developers.google.com/identity/sign-in/web/backend-auth) for python code samples.
 * See [balena.io](https://www.balena.io/blog/building-arm-containers-on-any-x86-machine-even-dockerhub/) and [ownyourbits.com](https://ownyourbits.com/2018/06/27/running-and-building-arm-docker-containers-in-x86/) for information on how to run and build an ARM container in an x86 system.
+* See [developers.google.com](https://developers.google.com/identity/protocols/OAuth2WebServer) for an example on how to add Google Sign-In to a Python web server.
