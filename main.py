@@ -103,6 +103,7 @@ def create_camera(name):
 
 def server_async():
     from views.login import LoginView
+    from views.auth import AuthView
     from views.home import HomeView
     from views.camera import CameraView
 
@@ -117,12 +118,15 @@ def server_async():
     app = web.Application()
     app.add_routes([
         web.view('/login', LoginView),
+        web.view('/oauth', AuthView),
         web.view('/', HomeView),
         web.view('/camera', CameraView)
     ])
-    app.router.add_static('/static', path='static', name='static')
+    app.router.add_static('/', path='static', name='static')
     app['client_id'] = load_client_id(namespace)
     app['camera'] = web_cam
+    app['domain'] = namespace.domain
+    app['port'] = namespace.port
 
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
 

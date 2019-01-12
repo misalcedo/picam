@@ -1,10 +1,12 @@
-from aiohttp.web import View, Response
+import aiohttp_jinja2
+from aiohttp.web import View
 
 
 class LoginView(View):
-    """The handler for the streaming web-cam server."""
+    @aiohttp_jinja2.template('login.html.jinja2')
     async def get(self):
-        return Response(text="Hello, World!")
-
-    async def post(self):
-        return Response(text="Hello, World!")
+        return {
+            'client_id': self.request.app['client_id'],
+            'domain': self.request.app['domain'],
+            'port': self.request.app['port']
+        }

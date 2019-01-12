@@ -10,40 +10,27 @@
     <body>
         <h1>Puppy Cam</h1>
 
-        <div id="stream"></div>
-        <div id="login" class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
-        <button id="logout" hidden=true onclick="signOut();">Sign out</button>
+        <div hidden class="g-signin2" data-onsuccess="onSignIn"></div>
+
+        <img src="/camera" />
+        <br/>
+        <button onclick="signOut()">Log Out</button>
 
         <script>
-          function signOut(e) {
-            var auth2 = gapi.auth2.getAuthInstance();
-            auth2.signOut().then(function () {
-              console.log('User signed out.');
+            function onSignIn(googleUser) {
+                const profile = googleUser.getBasicProfile();
 
-              window.location.href = "/";
-            });
-          }
+                console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+                console.log('Name: ' + profile.getName());
+                console.log('Image URL: ' + profile.getImageUrl());
+                console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+            }
 
-          function onSignIn(googleUser) {
-            // Useful data for your client-side scripts:
-            var profile = googleUser.getBasicProfile();
-
-            console.log("ID: " + profile.getId()); // Don't send this directly to your server!
-            console.log('Full Name: ' + profile.getName());
-            console.log('Given Name: ' + profile.getGivenName());
-            console.log('Family Name: ' + profile.getFamilyName());
-            console.log("Image URL: " + profile.getImageUrl());
-            console.log("Email: " + profile.getEmail());
-
-            // The ID token you need to pass to your backend:
-            var id_token = googleUser.getAuthResponse().id_token;
-            console.log("ID Token: " + id_token);
-            document.cookie = "token=" + id_token;
-
-            document.getElementById("stream").innerHTML = '<img src="/stream.mjpg"/>';
-            document.getElementById("login").toggleAttribute("hidden");
-            document.getElementById("logout").toggleAttribute("hidden");
-          }
+            function signOut() {
+                gapi.auth2.getAuthInstance().signOut().then(function () {
+                    window.location.href = "/login";
+                });
+            }
         </script>
     </body>
 </html>
