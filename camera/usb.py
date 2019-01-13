@@ -56,6 +56,12 @@ class UsbCameraAsync:
     async def update_frame(self, frame):
         rotated_frame = await self.rotate_frame(frame)
         flipped_frame = await self.flip_frame(rotated_frame)
+
+        fps = self.video_stream.get(cv2.CAP_PROP_FPS)
+        width = self.video_stream.get(cv2.CAP_PROP_FRAME_WIDTH)
+        height = self.video_stream.get(cv2.CAP_PROP_FRAME_HEIGHT)
+
+        cv2.putText(flipped_frame, "FPS: {}, Size: ({}, {})".format(fps, width, height), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
         encoded, image = await self.encode_frame(flipped_frame)
 
         if encoded:
