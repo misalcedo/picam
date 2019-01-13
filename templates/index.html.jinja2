@@ -7,6 +7,8 @@
 
         <img alt="A camera stream using motion JPEG." src="/camera" />
         <br/>
-        <a href="{{ sign_out }}">Sign Out</a>
+        <form action="{{ sign_out }}" method="POST">
+            <input type="submit" value="Sign Out">
+        </form>
     </body>
 </html>

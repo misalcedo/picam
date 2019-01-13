@@ -1,35 +1,33 @@
-import hashlib
-import os
+import logging
 
-import google_auth_oauthlib.flow
-from aiohttp.web import HTTPFound
+from aiohttp import ClientSession
+from aiohttp.web import HTTPFound, Response
+from aiohttp_security import forget, is_anonymous, authorized_userid
 from aiohttp_session import get_session
+from aiojobs.aiohttp import spawn
 
 from views.base import BaseView
 
 
 class SignOutView(BaseView):
-    async def get(self):
-        path = self.request.app.router['auth'].url_for()
-        uri = self.request.url.join(path).human_repr()
-
-        return {
-            'client_id': self.request.app['client_id'],
-            'redirect_uri': uri
-        }
-
     async def post(self):
-        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file('resources/client_secret.json', scopes=[
-            'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile',
-            'https://www.googleapis.com/auth/plus.me'])
+        if await is_anonymous(self.request):
+            return Response()
 
+        await spawn(self.request, self.revoke_token())
+
+        response = HTTPFound(self.request.app.router['sign_in'].url_for())
+        await forget(self.request, response)
+        raise response
+
+    async def revoke_token(self):
         session = await get_session(self.request)
-        session['state'] = hashlib.sha256(os.urandom(1024)).hexdigest()
 
-        path = self.request.app.router['auth'].url_for()
-        flow.redirect_uri = self.request.url.join(path).human_repr()
-
-        authorization_url, state = flow.authorization_url(state=session['state'], access_type='offline',
-                                                          include_granted_scopes='true')
-
-        raise HTTPFound(authorization_url)
+        async with ClientSession() as client:
+            async with client.post('https://accounts.google.com/o/oauth2/revoke',
+                                   data={'token': session['credentials']['token']},
+                                   headers={'content-type': 'application/x-www-form-urlencoded'}) as revoke_response:
+                logging.info(
+                    "Received %d status to revoke the token of %s",
+                    revoke_response.status,
+                    await authorized_userid(self.request))

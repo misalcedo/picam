@@ -1,5 +1,3 @@
-import logging
-
 from aiohttp_security.abc import AbstractAuthorizationPolicy
 
 

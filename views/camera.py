@@ -6,6 +6,13 @@ from aiohttp_security import check_permission
 from auth.permissions import STREAM
 from views.base import BaseView
 
+RESPONSE_HEADERS = {
+    'Age': '0',
+    'Cache-Control': 'no-cache, private',
+    'Pragma': 'no-cache',
+    'Content-Type': 'multipart/x-mixed-replace; boundary=FRAME'
+}
+
 
 class CameraView(BaseView):
     """The handler for the streaming web-cam server."""
@@ -13,12 +20,7 @@ class CameraView(BaseView):
     async def get(self):
         await check_permission(self.request, STREAM, self.request.app)
 
-        response = StreamResponse(status=200, reason='OK', headers={
-            'Age': '0',
-            'Cache-Control': 'no-cache, private',
-            'Pragma': 'no-cache',
-            'Content-Type': 'multipart/x-mixed-replace; boundary=FRAME'
-        })
+        response = StreamResponse(status=200, reason='OK', headers=RESPONSE_HEADERS)
 
         await response.prepare(self.request)
 
@@ -35,8 +37,8 @@ class CameraView(BaseView):
 
                     await response.write(frame)
                     await response.write(b'\r\n')
-        except Exception as e:
-            logging.debug('Removed streaming client: {}', repr(e))
+        except Exception:
+            logging.info('Removed streaming client.')
             raise
 
         return response

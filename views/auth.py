@@ -1,3 +1,5 @@
+import logging
+
 import google_auth_oauthlib.flow
 from aiohttp.web import HTTPFound, HTTPUnauthorized
 from aiohttp_security import remember
@@ -6,6 +8,8 @@ from google.auth.transport import requests
 from google.oauth2 import id_token
 
 from views.base import BaseView
+
+ISSUERS = ['accounts.google.com', 'https://accounts.google.com']
 
 
 class AuthView(BaseView):
@@ -26,10 +30,6 @@ class AuthView(BaseView):
         authorization_response = self.request.url.human_repr()
         flow.fetch_token(authorization_response=authorization_response)
 
-        # Store the credentials in the session.
-        # ACTION ITEM for developers:
-        #     Store user's access and refresh tokens in your data store if
-        #     incorporating this code into your real app.
         credentials = flow.credentials
         session['credentials'] = {
             'token': credentials.token,
@@ -42,14 +42,12 @@ class AuthView(BaseView):
 
         user = id_token.verify_oauth2_token(credentials.id_token, requests.Request(), self.request.app['client_id'])
 
-        if user['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-            print('Wrong issuer.')
+        if user['iss'] not in ISSUERS:
+            logging.info('Wrong issuer: %s.', user['iss'])
             raise HTTPUnauthorized()
+
+        session['user'] = user
 
         response = HTTPFound("/")
         await remember(self.request, response, user['email'])
         raise response
-
-    def __iter__(self):
-        """See https://github.com/aio-libs/aiohttp-debugtoolbar/issues/207"""
-        return self._iter().__await__()
