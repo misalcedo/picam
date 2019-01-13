@@ -67,7 +67,7 @@ def serve():
 
 def add_configuration(app, arguments, web_cam):
     app['camera'] = web_cam
-    app['users'] = arguments.users
+    app['users'] = arguments['users']
 
 
 def setup_plugins(app):

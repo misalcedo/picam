@@ -3,6 +3,8 @@ services:
   camera:
     image: misalcedo/picam
     restart: unless-stopped
+    environment:
+      PARAMETERS: resources/parameters.yaml
     ports:
       - 1629:443
     devices:

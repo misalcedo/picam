@@ -14,7 +14,4 @@ class HomeView(BaseView):
 
         await check_permission(self.request, HOME, self.request.app)
 
-        return {
-            'client_id': self.request.app['client_id'],
-            'sign_out': self.request.app.router['sign_out'].url_for()
-        }
+        return {'sign_out': self.request.app.router['sign_out'].url_for()}

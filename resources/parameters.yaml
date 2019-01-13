@@ -1,6 +1,6 @@
 server:
   port: 443
-  host: localhost
+  host: "0.0.0.0"
   chain: "resources/fullchain.pem"
   key: "resources/privkey.pem"
 oauth:
@@ -8,7 +8,5 @@ oauth:
 camera:
   source: 0
   fps: 24
-  orientation: 0
+  orientation: 1
 users:
-  - rlsmith216@gmail.com
-  - msalced92@gmail.com

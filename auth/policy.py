@@ -1,3 +1,5 @@
+import logging
+
 from aiohttp_security.abc import AbstractAuthorizationPolicy
 
 
@@ -19,4 +21,6 @@ class AuthorizationPolicy(AbstractAuthorizationPolicy):
         Return True if the identity is allowed the permission
         in the current context, else return False.
         """
+        logging.info("User %s requested %s permission.", identity, permission)
+
         return not context['users'] or identity in context['users']
