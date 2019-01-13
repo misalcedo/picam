@@ -4,5 +4,3 @@ services:
     image: misalcedo/picam:x86-latest
   watchtower:
     image: v2tec/watchtower
-  redis:
-    image: redis

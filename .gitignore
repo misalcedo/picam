@@ -6,3 +6,4 @@ picam-venv
 .idea
 *.env
 .vscode
+resources/parameters.yaml

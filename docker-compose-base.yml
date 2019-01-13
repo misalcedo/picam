@@ -22,5 +22,5 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --interval 30
   redis:
-    image: arm64v8/redis:alpine
+    image: redis:alpine
     restart: unless-stopped
