@@ -13,12 +13,8 @@ class SignInView(BaseView):
     @aiohttp_jinja2.template('sign_in.html.jinja2')
     async def get(self):
         path = self.request.app.router['auth'].url_for()
-        uri = self.request.url.join(path).human_repr()
 
-        return {
-            'client_id': self.request.app['client_id'],
-            'redirect_uri': uri
-        }
+        return {'redirect_uri': self.request.url.join(path).human_repr()}
 
     async def post(self):
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file('resources/client_secret.json', scopes=[

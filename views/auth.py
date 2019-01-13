@@ -40,7 +40,7 @@ class AuthView(BaseView):
             'client_secret': credentials.client_secret,
             'scopes': credentials.scopes}
 
-        user = id_token.verify_oauth2_token(credentials.id_token, requests.Request(), self.request.app['client_id'])
+        user = id_token.verify_oauth2_token(credentials.id_token, requests.Request(), credentials.client_id)
 
         if user['iss'] not in ISSUERS:
             logging.info('Wrong issuer: %s.', user['iss'])
