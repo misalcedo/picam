@@ -14,26 +14,11 @@ from aiohttp_session import SimpleCookieStorage, session_middleware
 from aiojobs.aiohttp import setup as setup_jobs
 
 from auth.policy import AuthorizationPolicy
-from server.handler import StreamingHandler
-from server.stream import StreamingServer
 from views.auth import AuthView
 from views.camera import CameraView
 from views.home import HomeView
-from views.login import LoginView
-
-
-def main():
-    namespace = parse_arguments()
-    client_id = load_client_id(namespace)
-    favicon = load_favicon(namespace)
-    web_cam = create_camera(namespace.camera)
-
-    web_cam.record()
-
-    try:
-        serve(client_id, favicon, web_cam, namespace)
-    finally:
-        web_cam.stop()
+from views.sign_in import SignInView
+from views.sign_out import SignOutView
 
 
 def parse_arguments():
@@ -68,20 +53,6 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def serve(client_id, favicon, web_cam, namespace):
-    context = load_ssl_context(namespace)
-
-    server = StreamingServer(server_address=(namespace.host, namespace.port), handler_class=StreamingHandler,
-                             frames=web_cam.frames(), client_id=client_id,
-                             users=namespace.users, favicon=favicon)
-
-    server.socket = context.wrap_socket(server.socket, server_side=True)
-
-    print("Started web-cam server with arguments:", namespace)
-
-    server.serve_forever()
-
-
 def load_ssl_context(namespace):
     context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
     context.load_cert_chain(namespace.cert, namespace.key)
@@ -113,7 +84,7 @@ def create_camera(name):
     return Camera()
 
 
-def server_async():
+def serve():
     namespace = parse_arguments()
     context = load_ssl_context(namespace)
     web_cam = create_camera(namespace.camera)
@@ -153,15 +124,20 @@ def add_signals(app, web_cam):
 
 def add_routes(app):
     app.add_routes([
-        web.view('/login', LoginView, name='login'),
+        web.view('/sign_in', SignInView, name='sign_in'),
+        web.view('/sign_out', SignOutView, name='sign_out'),
         web.view('/oauth', AuthView, name='auth'),
         web.view('/', HomeView),
-        web.view('/camera', CameraView)
+        web.view('/camera', CameraView, name='camera')
     ])
     app.router.add_static('/', path='static', name='static')
 
 
-if __name__ == '__main__':
+def main():
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     logging.basicConfig(level=logging.DEBUG)
-    server_async()
+    serve()
+
+
+if __name__ == '__main__':
+    main()

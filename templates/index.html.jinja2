@@ -1,36 +1,12 @@
 <html>
     <head>
         <title>Puppy Cam</title>
-
-        <meta name="google-signin-scope" content="profile email">
-        <meta name="google-signin-client_id" content="{{ client_id }}">
-
-        <script src="https://apis.google.com/js/platform.js" async defer></script>
     </head>
     <body>
         <h1>Puppy Cam</h1>
 
-        <div hidden class="g-signin2" data-onsuccess="onSignIn"></div>
-
         <img src="/camera" />
         <br/>
-        <button onclick="signOut()">Log Out</button>
-
-        <script>
-            function onSignIn(googleUser) {
-                const profile = googleUser.getBasicProfile();
-
-                console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-                console.log('Name: ' + profile.getName());
-                console.log('Image URL: ' + profile.getImageUrl());
-                console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-            }
-
-            function signOut() {
-                gapi.auth2.getAuthInstance().signOut().then(function () {
-                    window.location.href = "/login";
-                });
-            }
-        </script>
+        <a href="{{ sign_out }}">Sign Out</a>
     </body>
 </html>

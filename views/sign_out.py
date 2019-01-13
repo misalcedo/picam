@@ -1,7 +1,6 @@
 import hashlib
 import os
 
-import aiohttp_jinja2
 import google_auth_oauthlib.flow
 from aiohttp.web import HTTPFound
 from aiohttp_session import get_session
@@ -9,8 +8,7 @@ from aiohttp_session import get_session
 from views.base import BaseView
 
 
-class LoginView(BaseView):
-    @aiohttp_jinja2.template('login.html.jinja2')
+class SignOutView(BaseView):
     async def get(self):
         path = self.request.app.router['auth'].url_for()
         uri = self.request.url.join(path).human_repr()
