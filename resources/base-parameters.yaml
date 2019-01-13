@@ -4,7 +4,7 @@ server:
   chain: "resources/fullchain.pem"
   key: "resources/privkey.pem"
 redis:
-  host: 'redis'
+  host: "redis"
   connections:
     min: 5
     max: 10
