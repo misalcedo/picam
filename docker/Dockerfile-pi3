@@ -39,4 +39,4 @@ ARG port
 EXPOSE $port
 ENV PORT=$port
 
-CMD python3 -u main.py --port $PORT --camera $CAMERA --domain $DOMAIN --users $USERS
+CMD python3 -u main.py --port $PORT --users $USERS

@@ -1,0 +1,14 @@
+server:
+  port: 443
+  host: localhost
+  chain: "resources/fullchain.pem"
+  key: "resources/privkey.pem"
+oauth:
+  client_secret: "resources/client_secret.json"
+camera:
+  source: 0
+  fps: 24
+  orientation: 0
+users:
+  - rlsmith216@gmail.com
+  - msalced92@gmail.com

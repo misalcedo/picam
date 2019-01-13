@@ -1,55 +1,20 @@
 import logging
-import threading
-import time
-
-from aiorwlock import RWLock
 from asyncio import Event, sleep
+
 import aiojobs
 import cv2
-
-
-from camera.camera import Camera
-from camera.frames import LatestFrame
-
-
-class UsbCamera(Camera):
-    """A camera implementation that uses a USB-based camera."""
-
-    def __init__(self):
-        self.video_stream = cv2.VideoCapture(0)
-        self.frame = LatestFrame()
-        self.thread = threading.Thread(target=self.capture, args=())
-        self.seconds_per_frame = 1 / 24
-
-    def record(self):
-        self.thread.daemon = True
-        self.thread.start()
-
-    def stop(self):
-        self.video_stream.release()
-
-    def frames(self):
-        return self.frame
-
-    def capture(self):
-        while self.video_stream.isOpened():
-            success, frame = self.video_stream.read()
-            if success:
-                encoded, image = cv2.imencode('.jpg', cv2.flip(frame, -1))
-                if encoded:
-                    self.frame.update(image.tobytes())
-
-                time.sleep(self.seconds_per_frame)
+from aiorwlock import RWLock
 
 
 class UsbCameraAsync:
     """A camera implementation that uses an asynchronous USB-based camera."""
 
-    def __init__(self, source=0, frames_per_second=24, orientation=-1, encoding='.jpg'):
+    def __init__(self, source, frames_per_second, orientation, encoding='.jpg'):
         self.seconds_per_frame = 1 / frames_per_second
         self.orientation = orientation
         self.encoding = encoding
         self.source = source
+
         self.event = Event()
         self.lock = RWLock()
 

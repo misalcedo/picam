@@ -36,10 +36,6 @@ RUN cmake \
 
 WORKDIR /usr/src/app
 
-ARG port
-EXPOSE $port
-ENV PORT=$port
-
 COPY . .
 
-CMD python3 -u main.py --port $PORT --camera $CAMERA --domain $DOMAIN --users $USERS
+CMD python3 -u main.py --parameters $PARAMETERS

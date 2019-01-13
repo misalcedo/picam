@@ -7,7 +7,6 @@ services:
       dockerfile: docker/Dockerfile-x86
       args:
         opencv_version: 4.0.1
-        port: 443
   zero:
     image: misalcedo/picam:zero-latest
     build:
@@ -15,7 +14,6 @@ services:
       dockerfile: docker/Dockerfile-zero
       args:
         opencv_version: 4.0.1
-        port: 443
   pi3:
     image: misalcedo/picam:pi3-latest
     build:
@@ -23,4 +21,3 @@ services:
       dockerfile: docker/Dockerfile-pi3
       args:
         opencv_version: 4.0.1
-        port: 443

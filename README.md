@@ -39,3 +39,4 @@ When exposing your Pi to the Internet, make sure to change the password from the
 * See [backend-auth](https://developers.google.com/identity/sign-in/web/backend-auth) for python code samples.
 * See [balena.io](https://www.balena.io/blog/building-arm-containers-on-any-x86-machine-even-dockerhub/) and [ownyourbits.com](https://ownyourbits.com/2018/06/27/running-and-building-arm-docker-containers-in-x86/) for information on how to run and build an ARM container in an x86 system.
 * See [developers.google.com](https://developers.google.com/api-client-library/python/auth/web-app) for an example on how to add Google Sign-In to a Python web server.
+* See [docs.opencv.org](https://docs.opencv.org/2.4/modules/core/doc/operations_on_arrays.html#flip) for explanation of camera orientation parameter.
