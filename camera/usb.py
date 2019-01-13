@@ -39,6 +39,9 @@ class UsbCameraAsync:
             self.video_stream = cv2.VideoCapture(self.source)
             self.tasks = await aiojobs.create_scheduler()
 
+            self.video_stream.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+            self.video_stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+
             await self.tasks.spawn(self.update(app))
 
     async def update(self, _):

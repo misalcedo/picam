@@ -31,12 +31,8 @@ RUN cmake \
   -D INSTALL_C_EXAMPLES=OFF \
   -D BUILD_EXAMPLES=OFF \
   .. && make -j12 && make install && \
-  ldconfig && cd /opt && rm -fr /opt/opencv-*
+  ldconfig && cd /opt && rm -fr /opt/opencv*
 
 WORKDIR /usr/src/app
 
-ARG port
-EXPOSE $port
-ENV PORT=$port
-
-CMD python3 -u main.py --port $PORT --users $USERS
+CMD python3 -u main.py --parameters $PARAMETERS

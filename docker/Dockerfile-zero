@@ -30,7 +30,7 @@ RUN cmake \
   -D INSTALL_C_EXAMPLES=OFF \
   -D BUILD_EXAMPLES=OFF \
   .. && make -j12 && make install && \
-  ldconfig && cd /opt && rm -fr /opt/opencv-*
+  ldconfig && cd /opt && rm -fr /opt/opencv*
 
 WORKDIR /usr/src/app
 
