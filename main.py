@@ -4,13 +4,16 @@ import logging
 import ssl
 
 import aiohttp_jinja2
+import aioredis
 import jinja2
 import uvloop
 import yaml
 from aiohttp import web
 from aiohttp_debugtoolbar import setup as setup_toolbar
+from aiohttp_remotes import Secure, setup as setup_remotes
 from aiohttp_security import SessionIdentityPolicy, setup as setup_security
-from aiohttp_session import SimpleCookieStorage, session_middleware
+from aiohttp_session import session_middleware
+from aiohttp_session.redis_storage import RedisStorage as SessionStorage
 from aiojobs.aiohttp import setup as setup_jobs
 
 from auth.policy import AuthorizationPolicy
@@ -45,6 +48,22 @@ def load_ssl_context(arguments):
     return context
 
 
+def create_redis(arguments):
+    redis_arguments = arguments['redis']
+    connections_arguments = redis_arguments['connections']
+    
+    return aioredis.create_redis_pool(
+        'redis://' + redis_arguments['host'],
+        minsize=connections_arguments['min'],
+        maxsize=connections_arguments['max'])
+
+
+async def close_redis(app):
+    pool = app['redis']
+    pool.close()
+    await pool.wait_closed()
+
+
 def serve():
     arguments = parse_arguments()
     camera_arguments = arguments['camera']
@@ -53,7 +72,7 @@ def serve():
     context = load_ssl_context(server_arguments)
     web_cam = Camera(camera_arguments['source'], camera_arguments['fps'], camera_arguments['orientation'])
 
-    middleware = session_middleware(SimpleCookieStorage())
+    middleware = session_middleware(SessionStorage(create_redis(arguments)))
 
     app = web.Application(middlewares=[middleware])
 
@@ -71,6 +90,7 @@ def add_configuration(app, arguments, web_cam):
 
 
 def setup_plugins(app):
+    setup_remotes(app, Secure())
     setup_toolbar(app)
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
     setup_jobs(app)
@@ -80,6 +100,7 @@ def setup_plugins(app):
 def add_signals(app, web_cam):
     app.on_startup.append(web_cam.record)
     app.on_cleanup.append(web_cam.stop)
+    app.on_cleanup.append(close_redis)
 
 
 def add_routes(app):

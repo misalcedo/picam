@@ -21,5 +21,7 @@ aiojobs==0.2.2
 aiohttp-remotes==0.1.2
 aiohttp-devtools==0.11
 aiorwlock==0.6.0
+aioredis==1.2.0
+imutils==0.5.2
 pyyaml==3.13
 jinja2==2.10

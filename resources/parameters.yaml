@@ -3,6 +3,11 @@ server:
   host: "0.0.0.0"
   chain: "resources/fullchain.pem"
   key: "resources/privkey.pem"
+redis:
+  host: 'redis'
+  connections:
+    min: 5
+    max: 10
 oauth:
   client_secret: "resources/client_secret.json"
 camera:
