@@ -12,7 +12,6 @@ services:
     volumes:
       - ${CERTS}/fullchain.pem:/usr/src/app/fullchain.pem
       - ${CERTS}/privkey.pem:/usr/src/app/privkey.pem
-      - .:/usr/src/app
   watchtower:
     image: v2tec/watchtower:armhf-latest
     restart: unless-stopped
