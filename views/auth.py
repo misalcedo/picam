@@ -36,12 +36,19 @@ class AuthView(BaseView):
             'token': credentials.token,
             'refresh_token': credentials.refresh_token,
             'token_uri': credentials.token_uri,
+            'id_token': credentials.id_token,
             'client_id': credentials.client_id,
             'client_secret': credentials.client_secret,
             'scopes': credentials.scopes}
 
+        user = id_token.verify_oauth2_token(credentials.id_token, requests.Request(), self.request.app['client_id'])
+
+        if user['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+            print('Wrong issuer.')
+            raise HTTPUnauthorized()
+
         response = HTTPFound("/")
-        await remember(self.request, response, 'jack')
+        await remember(self.request, response, user['email'])
         raise response
 
     def __iter__(self):
