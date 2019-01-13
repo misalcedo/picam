@@ -13,6 +13,8 @@ services:
       - ${CERTS}/fullchain.pem:/usr/src/app/resources/fullchain.pem
       - ${CERTS}/privkey.pem:/usr/src/app/resources/privkey.pem
       - ./resources/parameters.yaml:/usr/src/app/resources/parameters.yaml
+    depends_on:
+      - redis
   watchtower:
     image: v2tec/watchtower:armhf-latest
     restart: unless-stopped
