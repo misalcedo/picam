@@ -54,7 +54,8 @@ class UsbCameraAsync:
         return self.video_stream.isOpened()
 
     async def update_frame(self, frame):
-        flipped_frame = await self.flip_frame(frame)
+        rotated_frame = await self.rotate_frame(frame)
+        flipped_frame = await self.flip_frame(rotated_frame)
         encoded, image = await self.encode_frame(flipped_frame)
 
         if encoded:
