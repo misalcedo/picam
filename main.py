@@ -23,6 +23,7 @@ from views.camera import CameraView
 from views.home import HomeView
 from views.sign_in import SignInView
 from views.sign_out import SignOutView
+from asyncio import get_event_loop
 
 
 def parse_arguments():
@@ -51,11 +52,11 @@ def load_ssl_context(arguments):
 def create_redis(arguments):
     redis_arguments = arguments['redis']
     connections_arguments = redis_arguments['connections']
-    
-    return aioredis.create_redis_pool(
+
+    return get_event_loop().run_until_complete(aioredis.create_redis_pool(
         'redis://' + redis_arguments['host'],
         minsize=connections_arguments['min'],
-        maxsize=connections_arguments['max'])
+        maxsize=connections_arguments['max']))
 
 
 async def close_redis(app):
@@ -70,7 +71,11 @@ def serve():
     server_arguments = arguments['server']
 
     context = load_ssl_context(server_arguments)
-    web_cam = Camera(camera_arguments['source'], camera_arguments['fps'], camera_arguments['orientation'])
+    web_cam = Camera(
+        camera_arguments['source'],
+        camera_arguments['fps'],
+        camera_arguments['orientation'],
+        camera_arguments['rotation'])
 
     middleware = session_middleware(SessionStorage(create_redis(arguments)))
 
@@ -90,7 +95,7 @@ def add_configuration(app, arguments, web_cam):
 
 
 def setup_plugins(app):
-    setup_remotes(app, Secure())
+    get_event_loop().run_until_complete(setup_remotes(app, Secure()))
     setup_toolbar(app)
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
     setup_jobs(app)
@@ -116,7 +121,7 @@ def add_routes(app):
 
 def main():
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     serve()
 
 

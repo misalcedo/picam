@@ -3,15 +3,17 @@ from asyncio import Event, sleep
 
 import aiojobs
 import cv2
+import imutils
 from aiorwlock import RWLock
 
 
 class UsbCameraAsync:
     """A camera implementation that uses an asynchronous USB-based camera."""
 
-    def __init__(self, source, frames_per_second, orientation, encoding='.jpg'):
+    def __init__(self, source, frames_per_second, orientation, rotation, encoding='.jpg'):
         self.seconds_per_frame = 1 / frames_per_second
         self.orientation = orientation
+        self.rotation = rotation
         self.encoding = encoding
         self.source = source
 
@@ -67,7 +69,16 @@ class UsbCameraAsync:
         return cv2.imencode(self.encoding, frame)
 
     async def flip_frame(self, frame):
-        return cv2.flip(frame, self.orientation)
+        if self.orientation:
+            return cv2.flip(frame, self.orientation)
+        else:
+            return frame
+
+    async def rotate_frame(self, frame):
+        if self.rotation and self.rotation != 0:
+            return imutils.rotate_bound(frame, self.rotation)
+        else:
+            return frame
 
     async def __aenter__(self):
         await self.event.wait()
