@@ -1,1 +1,2 @@
 STREAM = "stream"
+HOME = "home"

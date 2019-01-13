@@ -1,12 +1,9 @@
-import logging
-import requests
-from aiohttp.web import HTTPFound, HTTPForbidden, HTTPUnauthorized
+import google_auth_oauthlib.flow
+from aiohttp.web import HTTPFound, HTTPUnauthorized
 from aiohttp_security import remember
 from aiohttp_session import get_session
 from google.auth.transport import requests
 from google.oauth2 import id_token
-import google_auth_oauthlib.flow
-
 
 from views.base import BaseView
 
@@ -19,7 +16,9 @@ class AuthView(BaseView):
             raise HTTPUnauthorized()
 
         state = session['state']
-        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file('resources/client_secret.json', scopes=['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/plus.me'], state=state)
+        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file('resources/client_secret.json', scopes=[
+            'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile',
+            'https://www.googleapis.com/auth/plus.me'], state=state)
 
         path = self.request.app.router['auth'].url_for()
         flow.redirect_uri = self.request.url.join(path).human_repr()
@@ -27,10 +26,10 @@ class AuthView(BaseView):
         authorization_response = self.request.url.human_repr()
         flow.fetch_token(authorization_response=authorization_response)
 
-# Store the credentials in the session.
-# ACTION ITEM for developers:
-#     Store user's access and refresh tokens in your data store if
-#     incorporating this code into your real app.
+        # Store the credentials in the session.
+        # ACTION ITEM for developers:
+        #     Store user's access and refresh tokens in your data store if
+        #     incorporating this code into your real app.
         credentials = flow.credentials
         session['credentials'] = {
             'token': credentials.token,

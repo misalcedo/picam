@@ -153,7 +153,7 @@ def add_signals(app, web_cam):
 
 def add_routes(app):
     app.add_routes([
-        web.view('/login', LoginView),
+        web.view('/login', LoginView, name='login'),
         web.view('/oauth', AuthView, name='auth'),
         web.view('/', HomeView),
         web.view('/camera', CameraView)
