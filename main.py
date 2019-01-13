@@ -74,7 +74,7 @@ def serve():
     web_cam = Camera(
         camera_arguments['source'],
         camera_arguments['fps'],
-        camera_arguments['orientation'],
+        camera_arguments.get('orientation', None),
         camera_arguments['rotation'])
 
     middleware = session_middleware(SessionStorage(create_redis(arguments)))

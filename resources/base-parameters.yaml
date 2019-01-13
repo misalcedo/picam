@@ -13,6 +13,6 @@ oauth:
 camera:
   source: 0
   fps: 24
-  orientation: 1
+  orientation: !!null
   rotation: 0
 users:
