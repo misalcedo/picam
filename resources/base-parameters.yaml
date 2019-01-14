@@ -6,11 +6,14 @@ server:
 redis:
   host: "redis"
   connections:
-    min: 5
+    min: 1
     max: 10
 oauth:
   client_secret: "resources/client_secret.json"
 camera:
+  size:
+    - 1920 # width
+    - 1080 # height
   source: 0
   fps: 24
   orientation: !!null

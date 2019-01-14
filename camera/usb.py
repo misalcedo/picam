@@ -1,22 +1,22 @@
 import logging
-from asyncio import Event, sleep
+from asyncio import Event
 
 import aiojobs
 import cv2
-import imutils
 from aiorwlock import RWLock
+
+from camera.frame import Processor
 
 
 class UsbCameraAsync:
     """A camera implementation that uses an asynchronous USB-based camera."""
 
-    def __init__(self, source, frames_per_second, orientation, rotation, encoding='.jpg'):
-        self.seconds_per_frame = 1 / frames_per_second
-        self.orientation = orientation
-        self.rotation = rotation
-        self.encoding = encoding
+    def __init__(self, size, source, fps, rotation, orientation):
+        self.frames_per_second = fps
         self.source = source
+        self.width, self.height = size
 
+        self.frame_processor = Processor(orientation, rotation, '.jpg')
         self.event = Event()
         self.lock = RWLock()
 
@@ -39,8 +39,9 @@ class UsbCameraAsync:
             self.video_stream = cv2.VideoCapture(self.source)
             self.tasks = await aiojobs.create_scheduler()
 
-            self.video_stream.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-            self.video_stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+            self.video_stream.set(cv2.CAP_PROP_FPS, self.frames_per_second)
+            self.video_stream.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
+            self.video_stream.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
 
             await self.tasks.spawn(self.update(app))
 
@@ -49,7 +50,6 @@ class UsbCameraAsync:
             success, frame = self.video_stream.read()
             if success:
                 await self.update_frame(frame)
-                await sleep(self.seconds_per_frame)
             else:
                 logging.debug("Failed to read camera frame.")
 
@@ -57,15 +57,7 @@ class UsbCameraAsync:
         return self.video_stream.isOpened()
 
     async def update_frame(self, frame):
-        rotated_frame = await self.rotate_frame(frame)
-        flipped_frame = await self.flip_frame(rotated_frame)
-
-        fps = self.video_stream.get(cv2.CAP_PROP_FPS)
-        width = self.video_stream.get(cv2.CAP_PROP_FRAME_WIDTH)
-        height = self.video_stream.get(cv2.CAP_PROP_FRAME_HEIGHT)
-
-        cv2.putText(flipped_frame, "FPS: {}, Size: ({}, {})".format(fps, width, height), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-        encoded, image = await self.encode_frame(flipped_frame)
+        encoded, image = await self.frame_processor.process(frame)
 
         if encoded:
             async with self.lock.writer:
@@ -74,21 +66,6 @@ class UsbCameraAsync:
                 self.event.clear()
         else:
             logging.debug("Failed to encode camera frame as JPEG.")
-
-    async def encode_frame(self, frame):
-        return cv2.imencode(self.encoding, frame)
-
-    async def flip_frame(self, frame):
-        if self.orientation:
-            return cv2.flip(frame, self.orientation)
-        else:
-            return frame
-
-    async def rotate_frame(self, frame):
-        if self.rotation and self.rotation != 0:
-            return imutils.rotate_bound(frame, self.rotation)
-        else:
-            return frame
 
     async def __aenter__(self):
         await self.event.wait()
