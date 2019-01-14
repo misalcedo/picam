@@ -12,8 +12,8 @@ oauth:
   client_secret: "resources/client_secret.json"
 camera:
   size:
-    - 1920 # width
-    - 1080 # height
+    - 960 # width
+    - 720 # height
   source: 0
   clips: "/var/output/clips"
   processor:
