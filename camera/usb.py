@@ -11,11 +11,11 @@ from camera.frame import Processor
 class UsbCameraAsync:
     """A camera implementation that uses an asynchronous USB-based camera."""
 
-    def __init__(self, size, source, rotation, orientation):
+    def __init__(self, size, source, processor):
         self.source = source
         self.width, self.height = size
 
-        self.frame_processor = Processor(orientation, rotation, '.jpg')
+        self.frame_processor = Processor(encoding='.jpg', **processor)
         self.event = Event()
         self.lock = RWLock()
 

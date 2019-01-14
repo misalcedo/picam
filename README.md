@@ -35,6 +35,7 @@ When exposing your Pi to the Internet, make sure to change the password from the
 * See [pyimagesearch](https://www.pyimagesearch.com/2018/08/15/how-to-install-opencv-4-on-ubuntu/) for instructions on installing OpenCV on Ubuntu.
 * See [pyimagesearch](https://www.pyimagesearch.com/2018/09/26/install-opencv-4-on-your-raspberry-pi/) for instructions on installing OpenCV on Raspberry Pi.
 * See [pyimagesearch](https://www.pyimagesearch.com/2015/12/14/installing-opencv-on-your-raspberry-pi-zero/) for instructions on installing OpenCV on Raspberry Pi Zero.
+* See [pyimagesearch](https://www.pyimagesearch.com/2015/06/01/home-surveillance-and-motion-detection-with-the-raspberry-pi-python-and-opencv/) for an explanation of the motion detection.
 * See [sign-in](https://developers.google.com/identity/sign-in/web/sign-in#before_you_begin) for JS auth sample code.
 * See [backend-auth](https://developers.google.com/identity/sign-in/web/backend-auth) for python code samples.
 * See [balena.io](https://www.balena.io/blog/building-arm-containers-on-any-x86-machine-even-dockerhub/) and [ownyourbits.com](https://ownyourbits.com/2018/06/27/running-and-building-arm-docker-containers-in-x86/) for information on how to run and build an ARM container in an x86 system.

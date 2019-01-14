@@ -15,7 +15,9 @@ camera:
     - 1920 # width
     - 1080 # height
   source: 0
-  fps: 24
-  orientation: !!null
-  rotation: 0
+  processor:
+    orientation: !!null
+    rotation: 0
+    delta_threshold: 5
+    min_area: 5000
 users:
