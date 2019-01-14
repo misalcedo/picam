@@ -11,8 +11,7 @@ from camera.frame import Processor
 class UsbCameraAsync:
     """A camera implementation that uses an asynchronous USB-based camera."""
 
-    def __init__(self, size, source, fps, rotation, orientation):
-        self.frames_per_second = fps
+    def __init__(self, size, source, rotation, orientation):
         self.source = source
         self.width, self.height = size
 
@@ -39,7 +38,6 @@ class UsbCameraAsync:
             self.video_stream = cv2.VideoCapture(self.source)
             self.tasks = await aiojobs.create_scheduler()
 
-            self.video_stream.set(cv2.CAP_PROP_FPS, self.frames_per_second)
             self.video_stream.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
             self.video_stream.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
 

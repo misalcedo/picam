@@ -40,7 +40,7 @@ class Processor:
         height, width = final_frame.shape[:2]
 
         cv2.putText(final_frame,
-                    "FPS: {}, Size: ({}, {})".format(1 / duration, width, height),
+                    "FPS: {}, Size: ({}, {})".format(int(1 / duration), width, height),
                     LOCATION,
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.5,
