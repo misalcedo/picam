@@ -112,8 +112,8 @@ def add_routes(app, arguments):
         web.view('/', HomeView),
         web.view('/camera', CameraView, name='camera')
     ])
-    app.router.add_static('/', path='static', name='static')
     app.router.add_static('/clips', path=arguments['camera']['clips'], name='clips', show_index=True)
+    app.router.add_static('/', path='static', name='static')
 
 
 def main():

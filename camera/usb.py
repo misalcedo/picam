@@ -1,13 +1,15 @@
-import asyncio
 import logging
+import pathlib
 from asyncio import Event
+from datetime import datetime
+from os.path import join
 
 import aiojobs
 import cv2
 from aiorwlock import RWLock
 
 from camera.frame import Processor
-from os.path import join
+
 
 class UsbCameraAsync:
     """A camera implementation that uses an asynchronous USB-based camera."""
@@ -73,9 +75,14 @@ class UsbCameraAsync:
             logging.debug("Failed to encode camera frame as JPEG.")
 
     async def save_image(self, image):
-        filename = "%d.jpg" % (asyncio.get_event_loop().time())
+        now = datetime.now()
+        folder = "-".join([str(now.year), str(now.month), str(now.day)])
+        filename = "%d-%d_%d.jpg" % (now.hour, now.minute, now.microsecond)
+        path = join(self.clips_path, folder)
 
-        with open(join(self.clips_path, filename), 'wb') as f:
+        pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+
+        with open(join(path, filename), 'wb') as f:
             f.write(image)
 
     async def __aenter__(self):
