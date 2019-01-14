@@ -1,11 +1,11 @@
 {% extends "layout.html.jinja2" %}
+{% block session %}
+    <form class="form-inline" method="POST">
+        <button class="btn btn-outline-success mr-sm-0" type="submit">Sign In</button>
+    </form>
+{% endblock %}
 {% block content %}
-        <h1>Puppy Cam</h1>
-        <p>
-            You must be logged in to access the camera stream.
-        </p>
-
-        <form method="POST">
-            <input type="submit" value="Sign In">
-        </form>
+    <p class="text-center">
+        You must be logged in to access the camera stream.
+    </p>
 {% endblock %}

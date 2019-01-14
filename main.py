@@ -106,10 +106,10 @@ def add_signals(app, web_cam):
 
 def add_routes(app, arguments):
     app.add_routes([
+        web.view('/', HomeView, name="home"),
         web.view('/sign_in', SignInView, name='sign_in'),
         web.view('/sign_out', SignOutView, name='sign_out'),
         web.view('/oauth', AuthView, name='auth'),
-        web.view('/', HomeView),
         web.view('/camera', CameraView, name='camera')
     ])
     app.router.add_static('/clips', path=arguments['camera']['clips'], name='clips', show_index=True)
