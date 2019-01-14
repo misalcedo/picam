@@ -35,4 +35,6 @@ RUN cmake \
 
 WORKDIR /usr/src/app
 
+RUN mkdir -p /var/output/clips && mkdir -p /var/output/logs
+
 CMD python3 -u main.py --parameters $PARAMETERS

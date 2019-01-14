@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from asyncio import Event
 
@@ -6,13 +7,14 @@ import cv2
 from aiorwlock import RWLock
 
 from camera.frame import Processor
-
+from os.path import join
 
 class UsbCameraAsync:
     """A camera implementation that uses an asynchronous USB-based camera."""
 
-    def __init__(self, size, source, processor):
+    def __init__(self, size, source, processor, clips):
         self.source = source
+        self.clips_path = clips
         self.width, self.height = size
 
         self.frame_processor = Processor(encoding='.jpg', **processor)
@@ -55,15 +57,26 @@ class UsbCameraAsync:
         return self.video_stream.isOpened()
 
     async def update_frame(self, frame):
-        encoded, image = await self.frame_processor.process(frame)
+        encoded, motion_detected, image = await self.frame_processor.process(frame)
 
         if encoded:
+            image_bytes = image.tobytes()
+
             async with self.lock.writer:
-                self.frame = image.tobytes()
+                self.frame = image_bytes
                 self.event.set()
                 self.event.clear()
+
+            if motion_detected:
+                await self.tasks.spawn(self.save_image(image_bytes))
         else:
             logging.debug("Failed to encode camera frame as JPEG.")
+
+    async def save_image(self, image):
+        filename = "%d.jpg" % (asyncio.get_event_loop().time())
+
+        with open(join(self.clips_path, filename), 'wb') as f:
+            f.write(image)
 
     async def __aenter__(self):
         await self.event.wait()

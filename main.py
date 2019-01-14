@@ -80,7 +80,7 @@ def serve():
     add_configuration(app, arguments, web_cam)
     setup_plugins(app)
     add_signals(app, web_cam)
-    add_routes(app)
+    add_routes(app, arguments)
 
     web.run_app(app, port=server_arguments['port'], host=server_arguments['host'], ssl_context=context)
 
@@ -104,7 +104,7 @@ def add_signals(app, web_cam):
     app.on_cleanup.append(close_redis)
 
 
-def add_routes(app):
+def add_routes(app, arguments):
     app.add_routes([
         web.view('/sign_in', SignInView, name='sign_in'),
         web.view('/sign_out', SignOutView, name='sign_out'),
@@ -113,6 +113,7 @@ def add_routes(app):
         web.view('/camera', CameraView, name='camera')
     ])
     app.router.add_static('/', path='static', name='static')
+    app.router.add_static('/clips', path=arguments['camera']['clips'], name='clips', show_index=True)
 
 
 def main():

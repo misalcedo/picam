@@ -14,4 +14,7 @@ class HomeView(BaseView):
 
         await check_permission(self.request, HOME, self.request.app)
 
-        return {'sign_out': self.request.app.router['sign_out'].url_for()}
+        return {
+            'sign_out': self.request.app.router['sign_out'].url_for(),
+            'clips': self.request.app.router['clips'].url_for(filename='/')}
+

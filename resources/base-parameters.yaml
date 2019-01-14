@@ -15,6 +15,7 @@ camera:
     - 1920 # width
     - 1080 # height
   source: 0
+  clips: "/var/output/clips"
   processor:
     orientation: !!null
     rotation: 0

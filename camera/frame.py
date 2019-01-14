@@ -22,12 +22,13 @@ class Processor:
     async def process(self, frame):
         flipped = await self.flip_frame(frame)
         rotated = await self.rotate_frame(flipped)
-        motion = await self.detect_motion(rotated)
-        final_frame = motion
+        detected, bounded = await self.detect_motion(rotated)
+        final_frame = bounded
 
         await self.annotate(final_frame)
 
-        return await self.encode_frame(final_frame)
+        encoded, image = await self.encode_frame(final_frame)
+        return encoded, detected, image
 
     async def flip_frame(self, frame):
         if self.orientation:
@@ -55,13 +56,14 @@ class Processor:
         dilated = cv2.dilate(thresh, None, iterations=2)
 
         contours = cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        grabbed = imutils.grab_contours(contours)
 
-        for c in imutils.grab_contours(contours):
+        for c in grabbed:
             if cv2.contourArea(c) >= self.min_area:
                 (x, y, w, h) = cv2.boundingRect(c)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-        return frame
+        return len(grabbed) > 0, frame
 
     async def annotate(self, final_frame):
         duration = await self.passport.stamp("frame")
