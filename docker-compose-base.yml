@@ -8,8 +8,9 @@ services:
     devices:
       - /dev/${DEVICE}
     volumes:
-      - ${CERTS}/fullchain.pem:/usr/src/app/resources/fullchain.pem
-      - ${CERTS}/privkey.pem:/usr/src/app/resources/privkey.pem
+      - ${CERTS}/fullchain.pem:/etc/picam/fullchain.pem
+      - ${CERTS}/privkey.pem:/etc/picam/privkey.pem
+      - ./resource/overrides.yml:/etc/picam/config.yml
     depends_on:
       - redis
   watchtower:

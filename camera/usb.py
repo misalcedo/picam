@@ -15,12 +15,12 @@ from camera.frame import Processor
 class UsbCameraAsync:
     """A camera implementation that uses an asynchronous USB-based camera."""
 
-    def __init__(self, size, source, processor, clips):
+    def __init__(self, orientation, rotation, size, source, processor, clips):
         self.source = source
         self.clips_path = clips
         self.width, self.height = size
 
-        self.frame_processor = Processor(encoding='.jpg', **processor)
+        self.frame_processor = Processor(orientation=orientation, rotation=rotation, encoding='.jpg', **processor)
         self.event = Event()
         self.lock = RWLock()
 

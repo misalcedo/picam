@@ -26,7 +26,7 @@ from views.home import HomeView
 from views.sign_in import SignInView
 from views.sign_out import SignOutView
 
-DEFAULT_PARAMETERS = "resources/configuration.yaml"
+DEFAULT_PARAMETERS = "resources/configuration.yml"
 
 
 def load_configuration(name):
@@ -119,10 +119,8 @@ def listen(app, context, server):
 
 def main():
     """Runs the camera server."""
-    configuration = parse_arguments()
-
     setup()
-    serve(configuration)
+    serve(parse_arguments())
 
 
 def setup():
@@ -136,12 +134,16 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description="A home security camera server.")
 
     parser.add_argument("--config", help="The path to the YAML file with the runtime configuration.",
-                        default="/etc/picam/config.yaml")
+                        default="/etc/picam/config.yml")
 
     namespace = parser.parse_args()
 
     configuration = load_configuration(DEFAULT_PARAMETERS)
-    configuration.update(load_configuration(namespace.config))
+    overrides = load_configuration(namespace.config)
+
+    print(overrides)
+    configuration.update(overrides)
+    print(configuration)
 
     return configuration
 
