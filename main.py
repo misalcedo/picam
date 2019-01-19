@@ -2,13 +2,14 @@ import argparse
 import asyncio
 import logging
 import ssl
+from asyncio import get_event_loop
+from os.path import isfile
 
 import aiohttp_jinja2
 import aioredis
 import jinja2
 import uvloop
 import yaml
-from os.path import isfile
 from aiohttp import web
 from aiohttp_debugtoolbar import setup as setup_toolbar
 from aiohttp_remotes import Secure, setup as setup_remotes
@@ -24,7 +25,6 @@ from views.camera import CameraView
 from views.home import HomeView
 from views.sign_in import SignInView
 from views.sign_out import SignOutView
-from asyncio import get_event_loop
 
 DEFAULT_PARAMETERS = "resources/configuration.yaml"
 
@@ -37,53 +37,42 @@ def load_configuration(name):
         return yaml.load(f)
 
 
-def load_ssl_context(arguments):
-    context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-    context.load_cert_chain(arguments['chain'], arguments['key'])
-
-    return context
-
-
-def create_redis(arguments):
-    redis_arguments = arguments['redis']
-    connections_arguments = redis_arguments['connections']
-
-    return get_event_loop().run_until_complete(aioredis.create_redis_pool(
-        'redis://' + redis_arguments['host'],
-        minsize=connections_arguments['min'],
-        maxsize=connections_arguments['max']))
-
-
 async def close_redis(app):
     pool = app['redis']
     pool.close()
     await pool.wait_closed()
 
 
-def serve():
-    configuration = parse_arguments()
-    print(configuration)
-    camera_arguments = configuration['camera']
-    server_arguments = configuration['server']
+def serve(configuration):
+    sessions = create_sessions(configuration['redis'])
+    app = configure(sessions, configuration['users'])
 
-    context = load_ssl_context(server_arguments)
-    web_cam = Camera(**camera_arguments)
+    start_camera(app, configuration['camera'], configuration['motion'], configuration['logging'])
 
-    middleware = session_middleware(SessionStorage(create_redis(configuration)))
+    listen(app, load_ssl_context(configuration['tls']), configuration['server'])
 
-    app = web.Application(middlewares=[middleware])
 
-    add_configuration(app, configuration, web_cam)
+def create_sessions(redis_configuration):
+    return session_middleware(SessionStorage(create_redis(redis_configuration)))
+
+
+def create_redis(arguments):
+    connections_arguments = arguments['connections']
+
+    return get_event_loop().run_until_complete(aioredis.create_redis_pool(
+        'redis://' + arguments['host'],
+        minsize=connections_arguments['min'],
+        maxsize=connections_arguments['max']))
+
+
+def configure(sessions, users):
+    app = web.Application(middlewares=[sessions])
+    app['users'] = users
+
     setup_plugins(app)
-    add_signals(app, web_cam)
-    add_routes(app, configuration)
-
-    web.run_app(app, port=server_arguments['port'], host=server_arguments['host'], ssl_context=context)
-
-
-def add_configuration(app, arguments, web_cam):
-    app['camera'] = web_cam
-    app['users'] = arguments['users']
+    app.on_cleanup.append(close_redis)
+    add_routes(app)
+    return app
 
 
 def setup_plugins(app):
@@ -92,12 +81,6 @@ def setup_plugins(app):
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
     setup_jobs(app)
     setup_security(app, SessionIdentityPolicy(), AuthorizationPolicy())
-
-
-def add_signals(app, web_cam):
-    app.on_startup.append(web_cam.record)
-    app.on_cleanup.append(web_cam.stop)
-    app.on_cleanup.append(close_redis)
 
 
 def add_routes(app):
@@ -111,18 +94,45 @@ def add_routes(app):
     app.router.add_static('/', path='static', name='static')
 
 
+def start_camera(app, camera_arguments, motion_arguments, logging_arguments):
+    video = Camera(**camera_arguments, processor=motion_arguments, clips=logging_arguments['clips'])
+
+    app['camera'] = video
+    app.on_startup.append(video.record)
+    app.on_cleanup.append(video.stop)
+
+
+def load_ssl_context(arguments):
+    """Create a TLS context with the server's certificate chain and private key."""
+    if arguments is None:
+        return None
+
+    context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    context.load_cert_chain(arguments['chain'], arguments['key'])
+
+    return context
+
+
+def listen(app, context, server):
+    web.run_app(app, port=server['port'], host=server['host'], ssl_context=context)
+
+
 def main():
     """Runs the camera server."""
+    configuration = parse_arguments()
+
+    setup()
+    serve(configuration)
+
+
+def setup():
+    """Configure the runtime environment."""
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     logging.basicConfig(level=logging.INFO)
-    serve()
 
 
 def parse_arguments():
-    """
-    Sample usage:
-        python3 main.py --parameters config.yaml
-    """
+    """Parse the command-line arguments."""
     parser = argparse.ArgumentParser(description="A home security camera server.")
 
     parser.add_argument("--config", help="The path to the YAML file with the runtime configuration.",
