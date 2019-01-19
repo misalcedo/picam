@@ -4,6 +4,7 @@ from asyncio import Event
 from datetime import datetime
 from os.path import join
 
+import aiofiles
 import aiojobs
 import cv2
 from aiorwlock import RWLock
@@ -77,12 +78,12 @@ class UsbCameraAsync:
     async def save_image(self, image):
         now = datetime.now()
         folder = "-".join([str(now.year), str(now.month), str(now.day)])
-        filename = "%d-%d_%d.jpg" % (now.hour, now.minute, now.microsecond)
-        path = join(self.clips_path, folder)
+        filename = "%d-%d.jpg" % (now.minute, now.microsecond)
+        path = join(self.clips_path, folder, str(now.hour))
 
         pathlib.Path(path).mkdir(parents=True, exist_ok=True)
 
-        with open(join(path, filename), 'wb') as f:
+        async with aiofiles.open(join(path, filename), mode='wb') as f:
             f.write(image)
 
     async def __aenter__(self):
