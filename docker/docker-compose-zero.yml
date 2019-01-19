@@ -2,3 +2,7 @@ version: '3'
 services:
   camera:
     image: misalcedo/picam:zero-latest
+    volumes:
+      - ${CERTS}/fullchain.pem:/usr/src/app/resources/fullchain.pem
+      - ${CERTS}/privkey.pem:/usr/src/app/resources/privkey.pem
+      - ./resources/parameters.yaml:/etc/picam/config.yaml

@@ -16,6 +16,5 @@ class HomeView(BaseView):
 
         return {
             'home': self.request.app.router['home'].url_for(),
-            'sign_out': self.request.app.router['sign_out'].url_for(),
-            'clips': self.request.app.router['clips'].url_for(filename='/')}
+            'sign_out': self.request.app.router['sign_out'].url_for()}
 

@@ -3,7 +3,7 @@ services:
   camera:
     image: misalcedo/picam:x86-latest
     build:
-      context: ""
+      context: "."
       dockerfile: docker/Dockerfile-x86
       args:
         opencv_version: 4.0.1

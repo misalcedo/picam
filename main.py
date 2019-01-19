@@ -8,6 +8,7 @@ import aioredis
 import jinja2
 import uvloop
 import yaml
+from os.path import isfile
 from aiohttp import web
 from aiohttp_debugtoolbar import setup as setup_toolbar
 from aiohttp_remotes import Secure, setup as setup_remotes
@@ -25,20 +26,14 @@ from views.sign_in import SignInView
 from views.sign_out import SignOutView
 from asyncio import get_event_loop
 
+DEFAULT_PARAMETERS = "resources/configuration.yaml"
 
-def parse_arguments():
-    """
-    Sample usage:
-        python3 main.py --parameters config.yaml
-    """
-    parser = argparse.ArgumentParser(description="A home security camera server.")
 
-    parser.add_argument("--parameters", help="The path to the YAML file with the runtime parameters.",
-                        default="resources/parameters.yaml")
+def load_configuration(name):
+    if not isfile(name):
+        return {}
 
-    namespace = parser.parse_args()
-
-    with open(namespace.parameters) as f:
+    with open(name) as f:
         return yaml.load(f)
 
 
@@ -66,21 +61,22 @@ async def close_redis(app):
 
 
 def serve():
-    arguments = parse_arguments()
-    camera_arguments = arguments['camera']
-    server_arguments = arguments['server']
+    configuration = parse_arguments()
+    print(configuration)
+    camera_arguments = configuration['camera']
+    server_arguments = configuration['server']
 
     context = load_ssl_context(server_arguments)
     web_cam = Camera(**camera_arguments)
 
-    middleware = session_middleware(SessionStorage(create_redis(arguments)))
+    middleware = session_middleware(SessionStorage(create_redis(configuration)))
 
     app = web.Application(middlewares=[middleware])
 
-    add_configuration(app, arguments, web_cam)
+    add_configuration(app, configuration, web_cam)
     setup_plugins(app)
     add_signals(app, web_cam)
-    add_routes(app, arguments)
+    add_routes(app, configuration)
 
     web.run_app(app, port=server_arguments['port'], host=server_arguments['host'], ssl_context=context)
 
@@ -104,7 +100,7 @@ def add_signals(app, web_cam):
     app.on_cleanup.append(close_redis)
 
 
-def add_routes(app, arguments):
+def add_routes(app):
     app.add_routes([
         web.view('/', HomeView, name="home"),
         web.view('/sign_in', SignInView, name='sign_in'),
@@ -112,14 +108,32 @@ def add_routes(app, arguments):
         web.view('/oauth', AuthView, name='auth'),
         web.view('/camera', CameraView, name='camera')
     ])
-    app.router.add_static('/clips', path=arguments['camera']['clips'], name='clips', show_index=True)
     app.router.add_static('/', path='static', name='static')
 
 
 def main():
+    """Runs the camera server."""
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     logging.basicConfig(level=logging.INFO)
     serve()
+
+
+def parse_arguments():
+    """
+    Sample usage:
+        python3 main.py --parameters config.yaml
+    """
+    parser = argparse.ArgumentParser(description="A home security camera server.")
+
+    parser.add_argument("--config", help="The path to the YAML file with the runtime configuration.",
+                        default="/etc/picam/config.yaml")
+
+    namespace = parser.parse_args()
+
+    configuration = load_configuration(DEFAULT_PARAMETERS)
+    configuration.update(load_configuration(namespace.config))
+
+    return configuration
 
 
 if __name__ == '__main__':
