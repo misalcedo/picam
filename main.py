@@ -18,6 +18,7 @@ from aiohttp_session import session_middleware
 from aiohttp_session.redis_storage import RedisStorage as SessionStorage
 from aiojobs.aiohttp import setup as setup_jobs
 
+import merge
 from auth.policy import AuthorizationPolicy
 from camera.usb import UsbCameraAsync as Camera
 from views.auth import AuthView
@@ -31,6 +32,7 @@ DEFAULT_PARAMETERS = "resources/configuration.yml"
 
 def load_configuration(name):
     if not isfile(name):
+        logging.info(f"File '{name}' not found. Returning an empty dictionary.")
         return {}
 
     with open(name) as f:
@@ -141,11 +143,7 @@ def parse_arguments():
     configuration = load_configuration(DEFAULT_PARAMETERS)
     overrides = load_configuration(namespace.config)
 
-    print(overrides)
-    configuration.update(overrides)
-    print(configuration)
-
-    return configuration
+    return merge.merge_dict(configuration, overrides)
 
 
 if __name__ == '__main__':
