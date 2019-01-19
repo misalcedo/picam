@@ -1,14 +1,13 @@
-import asyncio
+import time
 
 from aiorwlock import RWLock
 
 
 class Passport:
-    def __init__(self, loop=asyncio.get_event_loop()):
-        self.loop = loop
+    def __init__(self):
         self.lock = RWLock()
         self.stamps = {}
-        self.start = loop.time()
+        self.start = time.perf_counter()
 
     async def stamp(self, stamp):
         before = await self.last_time(stamp)
@@ -18,7 +17,7 @@ class Passport:
 
     async def latest_time(self, stamp):
         async with self.lock.writer:
-            now = self.loop.time()
+            now = time.perf_counter()
             self.stamps[stamp] = now
             return now
 
