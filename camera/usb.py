@@ -1,6 +1,6 @@
 import logging
 import pathlib
-from asyncio import Event, get_runnin_loop
+from asyncio import Event, get_event_loop
 from datetime import datetime
 from os.path import join
 
@@ -27,7 +27,7 @@ class UsbCameraAsync:
         self.frame_processor = Processor(orientation=orientation, rotation=rotation, encoding='.jpg', **processor)
         self.event = Event()
         self.lock = RWLock()
-        self.loop = asyncio.get_running_loop()
+        self.loop = get_event_loop()
 
         self.video_stream = None
         self.tasks = None
@@ -55,7 +55,7 @@ class UsbCameraAsync:
 
     async def update(self, _):
         while await self.is_recording():
-            success, frame = yield from loop.run_in_executor(None, read, self.video_stream)
+            success, frame = await self.loop.run_in_executor(None, read, self.video_stream)
             if success:
                 await self.update_frame(frame)
             else:
