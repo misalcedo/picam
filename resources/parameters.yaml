@@ -1,0 +1,24 @@
+server:
+  port: 443
+  host: "0.0.0.0"
+  chain: "resources/fullchain.pem"
+  key: "resources/privkey.pem"
+redis:
+  host: "redis"
+  connections:
+    min: 1
+    max: 10
+oauth:
+  client_secret: "resources/client_secret.json"
+camera:
+  size:
+    - 480 # width
+    - 320 # height
+  source: 0
+  clips: "/var/output/clips"
+  processor:
+    orientation: !!null
+    rotation: 180
+    delta_threshold: 5
+    min_area: 5000
+users:

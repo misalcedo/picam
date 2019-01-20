@@ -10,7 +10,7 @@ redis:
     min: 1
     max: 10
 oauth:
-  client_secret: "/etc/picam/client_secret.json"
+  client_secret: "/etc/picam//client_secret.json"
 camera:
   source: 0
   orientation: !!null
