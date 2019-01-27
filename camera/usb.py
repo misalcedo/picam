@@ -1,15 +1,15 @@
 import logging
 import pathlib
-from asyncio import Event, get_event_loop
+from asyncio import Event, get_event_loop, Queue
 from datetime import datetime
 from os.path import join
 
 import aiofiles
 import aiojobs
-import cv2
 from aiorwlock import RWLock
 
 from camera.frame import Processor
+from video.usb import UsbVideo
 
 
 def read(video):
@@ -29,40 +29,41 @@ class UsbCameraAsync:
         self.lock = RWLock()
         self.loop = get_event_loop()
 
-        self.video_stream = None
+        self.queue = Queue(loop=self.loop)
+
+        self.reader = None
         self.tasks = None
         self.frame = None
 
     async def stop(self, _):
         await self.tasks.close()
-        await self.release_video()
 
+        self.reader.stop()
         self.tasks = None
-        self.video_stream = None
-
-    async def release_video(self):
-        self.video_stream.release()
 
     async def record(self, app):
-        if not self.tasks:
-            self.video_stream = cv2.VideoCapture(self.source)
+        if self.tasks is None:
             self.tasks = await aiojobs.create_scheduler()
+            self.reader = UsbVideo((self.width, self.height), self.source)
 
-            self.video_stream.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
-            self.video_stream.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
+            self.reader.start()
 
+            await self.tasks.spawn(self.read())
             await self.tasks.spawn(self.update(app))
+
+    async def read(self):
+        while await self.is_recording():
+            frame = await self.loop.run_in_executor(None, self.reader.frame)
+            if frame is not None:
+                await self.queue.put(frame)
+
+    async def is_recording(self):
+        return self.reader.is_readable()
 
     async def update(self, _):
         while await self.is_recording():
-            success, frame = await self.loop.run_in_executor(None, read, self.video_stream)
-            if success:
-                await self.update_frame(frame)
-            else:
-                logging.debug("Failed to read camera frame.")
-
-    async def is_recording(self):
-        return self.video_stream.isOpened()
+            frame = await self.queue.get()
+            await self.update_frame(frame)
 
     async def update_frame(self, frame):
         encoded, motion_detected, image = await self.frame_processor.process(frame)
