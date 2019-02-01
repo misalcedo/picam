@@ -1,4 +1,4 @@
 ffmpeg -ar 44100 -ac 2 -acodec pcm_s16le -f s16le -i /dev/zero \
     -f v4l2 -video_size hd1080 -input_format h264 -framerate 30 -i /dev/video0 \
     -vcodec copy -acodec aac -ab 128k -g 60 \
-    -f dash -min_seg_duration 1000 -remove_at_exit 1 -window_size 60 /tmp/live.mpd
+    -f dash -min_seg_duration 1000 -remove_at_exit 1 -window_size 60 /tmp/dash/live.mpd
