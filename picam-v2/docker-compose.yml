@@ -9,14 +9,16 @@ services:
   nginx:
     image: nginx:alpine
     restart: unless-stopped
+    ports:
+      - 1629:443
     volumes:
       - /etc/letsencrypt/live/puppy-cam.salcedo.cc/fullchain.pem
       - /etc/letsencrypt/live/puppy-cam.salcedo.cc/privkey.pem
       - $HOME/picam/picam-v2/nginx.conf:/etc/nginx/nginx.conf:ro
       - $HOME/picam/index.html:/var/www/html/index.html:ro
       - /tmp:/tmp:ro
-  vouch:
-    image: voucher/vouch-proxy
-    restart: unless-stopped
-    volumes:
-      - $HOME/voucher.yml:/config
+#  vouch:
+#    image: voucher/vouch-proxy
+#    restart: unless-stopped
+#    volumes:
+#      - $HOME/voucher.yml:/config
