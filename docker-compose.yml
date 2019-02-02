@@ -15,6 +15,7 @@ services:
       - recordings:/var/output/dash
     devices:
       - /dev/video0:/dev/video0
+      - /dev/snd:/dev/snd
   frontend:
     image: nginx:alpine
     restart: unless-stopped
