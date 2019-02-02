@@ -1,4 +1,5 @@
-FROM ubuntu
+ARG IMAGE
+FROM $IMAGE
 MAINTAINER miguel@salcedo.cc
 
 RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
