@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-docker build --build-arg opencv_version=4.0.1 --build-arg port=443 -f ${DOCKERFILE_PATH} -t ${IMAGE_NAME} .
