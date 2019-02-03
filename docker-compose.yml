@@ -7,7 +7,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --interval 30
   camera:
-    image: misalcedo/picam:x86-latest
     restart: unless-stopped
     build: 
       context: ./camera
@@ -21,6 +20,8 @@ services:
   frontend:
     image: nginx:alpine
     restart: unless-stopped
+    depends_on:
+      - camera
     ports:
       - 8080:80
     volumes:
