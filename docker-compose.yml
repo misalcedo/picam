@@ -23,10 +23,19 @@ services:
     depends_on:
       - camera
     ports:
-      - 8080:80
+      - 1629:443
     volumes:
       - ./stream/index.html:/usr/share/nginx/html/index.html:ro
       - ./stream/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs/fullchain.pem:/etc/nginx/fullchain.pem:ro
+      - ./certs/privkey.pem:/etc/nginx/privkey.pem:ro
       - recordings:/usr/share/nginx/html/dash:ro
+  oauth:
+    image: voucher/vouch-proxy
+    volumes:
+      - ./vouch.yml:/config/config.yml
+      - users:/data
+
 volumes:
   recordings:
+  users:

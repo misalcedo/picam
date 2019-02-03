@@ -8,3 +8,4 @@ picam-venv
 .vscode
 overrides.yml
 var/
+vouch.yml
