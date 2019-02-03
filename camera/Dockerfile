@@ -13,4 +13,4 @@ CMD ffmpeg -v verbose \
     -preset ultrafast -tune zerolatency \
     -g 30 -r 15 \
     -acodec aac -ab 128k \
-    -f dash -remove_at_exit 1 -window_size 5 live.mpd
+    -f dash -min_seg_duration 1000 -remove_at_exit 1 -window_size 5 live.mpd
