@@ -8,6 +8,7 @@ services:
     command: --interval 30
   camera:
     restart: unless-stopped
+    stop_grace_period: 1s
     build: 
       context: ./camera
       args:
@@ -22,10 +23,11 @@ services:
     restart: unless-stopped
     depends_on:
       - camera
+      - oauth
     ports:
       - 1629:443
     volumes:
-      - ./stream/index.html:/usr/share/nginx/html/index.html:ro
+      - ./static:/usr/share/nginx/html/static:ro
       - ./stream/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./certs/fullchain.pem:/etc/nginx/fullchain.pem:ro
       - ./certs/privkey.pem:/etc/nginx/privkey.pem:ro
