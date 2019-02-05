@@ -29,17 +29,17 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col">
-                    <video controls autoplay src="/camera/1/live.mpd">
+                    <video id="video1" controls autoplay src="/camera/1/live.mpd">
                         Video not supported.
                     </video>
                 </div>
                 <div class="col">
-                    <video controls autoplay src="/camera/2/live.mpd">
+                    <video id="video2" controls autoplay src="/camera/2/live.mpd">
                         Video not supported.
                     </video>
                 </div>
                 <div class="col">
-                    <video controls autoplay src="/camera/3/live.mpd">
+                    <video id="video3" controls autoplay src="/camera/3/live.mpd">
                         Video not supported.
                     </video>
                 </div>
@@ -47,10 +47,10 @@
         </div>
 
         <script>
-            function init() {
+            function init(id) {
                 let video, player;
 
-                video = document.querySelector("video");
+                video = document.getElementById("video" + id);
                 player = dashjs.MediaPlayer().create();
 
                 player.initialize(video, video.src, true);
@@ -58,7 +58,9 @@
             }
 
             document.addEventListener("DOMContentLoaded", function () {
-                init();
+                init("1");
+                init("2");
+                init("3");
             });
         </script>
     </body>

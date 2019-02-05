@@ -13,6 +13,8 @@ services:
       - oauth
     ports:
       - 1629:443
+    networks:
+      - hub
     volumes:
       - ./static:/usr/share/nginx/html/static:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
@@ -21,9 +23,14 @@ services:
       - recordings:/usr/share/nginx/html/dash:ro
   oauth:
     image: voucher/vouch-proxy
+    networks:
+      - hub
     volumes:
       - ./vouch.yml:/config/config.yml
       - users:/data
+
+networks:
+  hub:
 
 volumes:
   recordings:
