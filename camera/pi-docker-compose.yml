@@ -1,0 +1,7 @@
+version: '3'
+services:
+  watchtower:
+    image: v2tec/watchtower:armhf-latest
+  feed:
+    build:
+      dockerfile: Dockerfile-pi

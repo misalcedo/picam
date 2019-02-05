@@ -1,0 +1,33 @@
+version: '3'
+services:
+  watchtower:
+    image: v2tec/watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30
+  feed:
+    restart: unless-stopped
+    stop_grace_period: 1s
+    build: 
+      context: ./feed
+    volumes:
+      - recordings:/var/output/dash
+    devices:
+      - /dev/video0:/dev/video0
+      - /dev/snd:/dev/snd
+  stream:
+    image: nginx:alpine
+    restart: unless-stopped
+    depends_on:
+      - feed
+    ports:
+      - 2916:80
+    volumes:
+      - ./stream/static/index.html:/usr/share/nginx/html/index.html:ro
+      - ./stream/static/favicon.ico:/usr/share/nginx/html/favicon.ico:ro
+      - ./stream/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - recordings:/usr/share/nginx/html/dash:ro
+
+volumes:
+  recordings:
