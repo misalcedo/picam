@@ -1,11 +1,7 @@
-__pycache__
-client_secret.json
-picam-venv
 *.pem
 *.key
 .idea
 *.env
 .vscode
-overrides.yml
 var/
 vouch.yml
