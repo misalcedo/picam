@@ -1,0 +1,5 @@
+version: '3'
+services:
+  feed:
+    image: misalcedo/picam-live
+    build: .
