@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-# Copies the certs to the current directory
-cp /etc/letsencrypt/live/$HOSTNAME/privkey.pem ./
-cp /etc/letsencrypt/live/$HOSTNAME/fullchain.pem ./
-
-chown ${USER}:${USER} *.pem

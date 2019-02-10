@@ -1,1 +1,0 @@
-docker run --rm -it -p 8080:80 -v $HOME/picam/resources/nginx.conf:/etc/nginx/nginx.conf:ro -v /tmp:/tmp:ro nginx:alpine	
