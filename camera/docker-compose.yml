@@ -10,7 +10,6 @@ services:
     image: misalcedo/picam-feed
     restart: unless-stopped
     stop_grace_period: 1s
-    privileged: true
     build: 
       context: ./feed
     volumes:
