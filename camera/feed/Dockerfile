@@ -11,4 +11,4 @@ CMD ["-fflags", "+genpts+igndts", \
         "-f", "v4l2", "-video_size", "hd720", "-r", "25", "-vb", "4M", "-input_format", "h264", "-i", "/dev/video0", \
         "-vcodec", "copy", "-vb", "4M", "-r", "25", "-g", "50", \
         "-acodec", "aac", "-ab", "128k", \
-        "-f", "dash", "-min_seg_duration", "1000", "-remove_at_exit", "1", "-window_size", "120", "live.mpd"]
+        "-f", "dash", "-min_seg_duration", "1000", "-remove_at_exit", "1", "-window_size", "5", "live.mpd"]
