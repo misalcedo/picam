@@ -13,4 +13,4 @@ ffmpeg -fflags +genpts+igndts \
        -f h264 -framerate 30 -thread_queue_size 512 -i /dev/video0 \
        -vcodec copy -g 60 \
        -acodec aac -ab 128k \
-       -f $STREAM_PROTOCOL -r 30 $STREAM_URL
+       -f $STREAM_PROTOCOL $STREAM_URL
