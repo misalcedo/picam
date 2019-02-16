@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ffmpeg -f mpegts -i udp://192.168.86.110:2916 \
+ffmpeg -f mpegts -i udp://:2916 \
        -vcodec copy \
        -acodec copy \
        -f dash -min_seg_duration 1000 -remove_at_exit 1 -window_size 5 live.mpd
