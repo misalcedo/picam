@@ -13,7 +13,7 @@ services:
     build: 
       context: ./feed
     volumes:
-      - recordings:/var/output/hls
+      - recordings:/var/output/dash
   stream:
     image: misalcedo/picam-stream
     restart: unless-stopped
@@ -24,7 +24,7 @@ services:
     ports:
       - 2916:80
     volumes:
-      - recordings:/usr/share/nginx/html/hls:ro
+      - recordings:/usr/share/nginx/html/dash:ro
 
 volumes:
   recordings:
