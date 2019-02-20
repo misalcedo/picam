@@ -13,7 +13,7 @@ services:
     build: 
       context: ./feed
     volumes:
-      - recordings:/var/output/dash
+      - recordings:/var/output/hls
     devices:
       - /dev/video0:/dev/video0
       - /dev/snd:/dev/snd
@@ -27,7 +27,7 @@ services:
     ports:
       - 2916:80
     volumes:
-      - recordings:/usr/share/nginx/html/dash:ro
+      - recordings:/usr/share/nginx/html/hls:ro
 
 volumes:
   recordings:
