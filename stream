@@ -8,8 +8,8 @@ v4l2-ctl --overlay=1
 v4l2-ctl -p 30
 v4l2-ctl --set-ctrl=video_bitrate=4000000
 
-ffmpeg -fflags +genpts+igndts \
+ffmpeg \
        -f h264 -framerate 30 -thread_queue_size 4096 -i /dev/video0 \
-       -vcodec copy -g 60 \
+       -vcodec copy -g 60 -flags +cgop+genpts+igndts \
        -an \
        -f $STREAM_PROTOCOL $STREAM_URL
